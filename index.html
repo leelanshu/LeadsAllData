@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -178,7 +178,7 @@ body{margin:0;background:#05070f;padding:12px}
   #sl-dash .bar label{flex:1 1 140px}
   #sl-dash .bar input,#sl-dash .bar select{width:100%}
   #sl-dash .bar button{flex:1 1 auto}
-  #sl-dash input,#sl-dash select{font-size:16px} /* iPhone zoom rokne ke liye */
+  #sl-dash input,#sl-dash select{font-size:16px} /* prevents iPhone zoom */
   #sl-dash .kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
   #sl-dash .kpi .v{font-size:20px}
   #sl-dash .kpi .l{font-size:12px}
@@ -191,7 +191,108 @@ body{margin:0;background:#05070f;padding:12px}
   #sl-dash .cmp{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
   #sl-dash .cmp .v{font-size:18px}
 }
-@media(prefers-reduced-motion:reduce){#sl-dash *{transition:none!important}}
+
+/* ---------- Clickable + animations ---------- */
+#sl-dash .tabs{position:relative}
+#sl-dash .tab{position:relative;z-index:1;transition:color .3s}
+#sl-dash .tab.on,#sl-dash .tab.on:hover{background:transparent;box-shadow:none;color:#fff}
+#sl-dash .tab-ind{position:absolute;left:0;top:0;z-index:0;border-radius:999px;pointer-events:none;
+  background:linear-gradient(135deg,var(--a),#5b8cff);box-shadow:0 6px 18px rgba(91,140,255,.45),inset 0 1px 0 rgba(255,255,255,.35);
+  transition:transform .55s cubic-bezier(.34,1.45,.5,1),width .45s cubic-bezier(.34,1.45,.5,1),height .3s}
+#sl-dash .tab-ind.sq{animation:sq .55s cubic-bezier(.3,1.6,.5,1)}
+@keyframes sq{0%{border-radius:999px}30%{filter:brightness(1.25);clip-path:inset(12% -4% round 999px)}60%{clip-path:inset(-3% 2% round 999px)}100%{clip-path:inset(0 round 999px)}}
+
+#sl-dash .clk{cursor:pointer}
+#sl-dash .kpi{transition:transform .35s cubic-bezier(.3,1.4,.5,1),box-shadow .35s,border-color .35s}
+#sl-dash .kpi.clk:hover{transform:translateY(-4px);border-color:rgba(139,123,255,.6);
+  box-shadow:0 18px 40px rgba(0,0,0,.35),0 0 0 1px rgba(139,123,255,.25),0 0 28px rgba(56,225,198,.18),inset 0 1px 0 rgba(255,255,255,.25)}
+#sl-dash .kpi.clk::after{content:"↗";position:absolute;top:10px;right:12px;font-size:13px;color:var(--b);opacity:0;transform:translate(-4px,4px);transition:.3s}
+#sl-dash .kpi.clk:hover::after{opacity:.9;transform:none}
+#sl-dash .kpi{position:relative}
+#sl-dash .cmp>div{position:relative;transition:transform .3s cubic-bezier(.3,1.4,.5,1),background .3s,border-color .3s}
+#sl-dash .cmp>div.clk:hover{transform:translateY(-3px);background:rgba(255,255,255,.09);border-color:rgba(139,123,255,.5)}
+#sl-dash .hb.clk{position:relative;border-radius:10px;margin-left:-6px;margin-right:-6px;padding:4px 6px;transition:background .25s,transform .25s}
+#sl-dash .hb.clk:hover{background:rgba(255,255,255,.07);transform:translateX(3px)}
+#sl-dash .col.clk{cursor:pointer;position:relative}
+#sl-dash .col.clk:hover .b{filter:brightness(1.3)}
+#sl-dash tr.clk:hover,#sl-dash tr.po:hover,#sl-dash tr.pc:hover,#sl-dash tr.pd:hover{background:rgba(255,255,255,.06)}
+#sl-dash tr.po,#sl-dash tr.pc,#sl-dash tr.pd{cursor:pointer}
+#sl-dash .press{animation:press .45s cubic-bezier(.3,1.6,.5,1)}
+@keyframes press{0%{transform:scale(1)}30%{transform:scale(.965)}70%{transform:scale(1.015)}100%{transform:scale(1)}}
+
+/* water drop */
+#sl-dash .rp-host{overflow:hidden}
+#sl-dash .rp-rel{position:relative}
+#sl-dash .drop{position:absolute;border-radius:50%;pointer-events:none;z-index:0;transform:scale(0);
+  background:radial-gradient(circle,rgba(255,255,255,.32) 0,rgba(139,123,255,.2) 28%,rgba(56,225,198,.12) 50%,transparent 68%);
+  animation:dropA .8s cubic-bezier(.15,.7,.3,1) forwards}
+#sl-dash .drop::before,#sl-dash .drop::after{content:"";position:absolute;inset:18%;border-radius:50%;border:2px solid rgba(255,255,255,.55);
+  transform:scale(.05);opacity:1;animation:ringA .85s cubic-bezier(.15,.7,.3,1) forwards}
+#sl-dash .drop::after{inset:30%;border-color:rgba(56,225,198,.6);animation-delay:.12s}
+@keyframes dropA{0%{transform:scale(0);opacity:1}60%{opacity:.9}100%{transform:scale(1);opacity:0}}
+@keyframes ringA{0%{transform:scale(.05);opacity:1}100%{transform:scale(1.25);opacity:0}}
+
+/* ambient liquid blobs */
+#sl-dash::before{animation:blob1 18s ease-in-out infinite alternate}
+#sl-dash::after{animation:blob2 22s ease-in-out infinite alternate}
+@keyframes blob1{50%{transform:translate(90px,60px) scale(1.15)}100%{transform:translate(20px,140px) scale(.95)}}
+@keyframes blob2{50%{transform:translate(-80px,-50px) scale(1.2)}100%{transform:translate(-160px,10px) scale(1)}}
+
+/* tab / data entrance */
+#sl-dash .anim{animation:panelIn .5s cubic-bezier(.2,.8,.2,1)}
+@keyframes panelIn{from{opacity:0;transform:translateY(12px);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+#sl-dash .anim .card{animation:rise .65s cubic-bezier(.2,.9,.25,1.05) backwards;animation-delay:var(--d,0ms)}
+@keyframes rise{from{opacity:0;transform:translateY(22px) scale(.96)}}
+#sl-dash .anim .col .b,#sl-dash .anim .daily .d{animation:growY .9s cubic-bezier(.2,1.1,.3,1) backwards;animation-delay:calc(var(--d,0ms) + 150ms);transform-origin:bottom}
+#sl-dash .anim .col .n{animation:fadeUp .6s ease backwards;animation-delay:calc(var(--d,0ms) + 450ms)}
+@keyframes growY{from{transform:scaleY(0)}}
+#sl-dash .anim .hb .tr i{animation:growX 1s cubic-bezier(.2,1,.3,1) backwards;animation-delay:var(--d,0ms);transform-origin:left}
+@keyframes growX{from{transform:scaleX(0)}}
+#sl-dash .anim tbody>tr{animation:fadeUp .45s ease backwards;animation-delay:calc(var(--d,0ms) + 200ms)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}}
+#sl-dash tr.det td>*{animation:fadeUp .35s ease}
+
+/* popup */
+#sl-dash .pop{position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;padding:18px;
+  background:rgba(5,7,15,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+#sl-dash .pop.on{display:flex;animation:fadeIn .25s ease}
+#sl-dash .pop.out{animation:fadeOut .23s ease forwards}
+@keyframes fadeIn{from{opacity:0}}@keyframes fadeOut{to{opacity:0}}
+#sl-dash .pop-card{width:100%;max-width:1000px;max-height:88vh;display:flex;flex-direction:column;gap:10px;background:rgba(20,26,52,.95);padding:18px}
+#sl-dash .pop-card.go{animation:popIn .55s cubic-bezier(.18,1.3,.4,1) both}
+#sl-dash .pop.out .pop-card{animation:popOut .23s ease forwards}
+@keyframes popIn{0%{opacity:0;transform:scale(.25)}60%{opacity:1}100%{opacity:1;transform:scale(1)}}
+@keyframes popOut{to{opacity:0;transform:scale(.92) translateY(10px)}}
+#sl-dash .pop-h{display:flex;gap:10px;align-items:flex-start}
+#sl-dash .pop-h>div{flex:1;min-width:0}
+#sl-dash .pop-h h2{margin:0 0 4px;font-size:18px}
+#sl-dash .pop-x{width:38px;height:38px;padding:0;border-radius:50%;font-size:16px;flex:none;position:relative}
+#sl-dash .pop-x:hover{transform:rotate(90deg);transition:transform .3s}
+#sl-dash #pop-back{flex:none;position:relative}
+#sl-dash #pop-q{width:100%}
+#sl-dash .smo{display:none}
+#sl-dash #pop-tw{flex:1;min-height:0;max-height:none;overflow:auto;border-radius:12px}
+#sl-dash #pop-body.anim{animation:none}
+#sl-dash #pop-body.anim.fwd{animation:slideL .4s cubic-bezier(.2,.8,.2,1)}
+#sl-dash #pop-body.anim.bwd{animation:slideR .4s cubic-bezier(.2,.8,.2,1)}
+@keyframes slideL{from{opacity:0;transform:translateX(30px)}}
+@keyframes slideR{from{opacity:0;transform:translateX(-30px)}}
+#sl-dash #pop-body.anim tbody>tr{animation:fadeUp .4s ease backwards;animation-delay:calc(var(--d,0ms) + 120ms)}
+@media(max-width:700px){
+  #sl-dash .pop{align-items:flex-end;padding:0}
+  #sl-dash .pop-card{max-height:92vh;border-radius:22px 22px 0 0;padding:14px}
+  #sl-dash .pop-card.go{animation:sheetUp .5s cubic-bezier(.2,1.15,.35,1) both}
+  #sl-dash .pop.out .pop-card{animation:sheetDown .23s ease forwards}
+  #sl-dash .pop-h h2{font-size:16px}
+  #sl-dash #pop-tw .mtbl{min-width:0}
+  #sl-dash #pop-tw .hm{display:none}
+  #sl-dash #pop-tw .smo{display:inline}
+  #sl-dash #pop-tw .prod{max-width:120px;font-size:12px}
+  #sl-dash #pop-tw th,#sl-dash #pop-tw td{padding:8px 6px}
+}
+@keyframes sheetUp{from{transform:translateY(100%)}}
+@keyframes sheetDown{to{transform:translateY(100%)}}
+@media(prefers-reduced-motion:reduce){#sl-dash *,#sl-dash *::before,#sl-dash *::after,#sl-dash::before,#sl-dash::after{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
@@ -201,12 +302,12 @@ body{margin:0;background:#05070f;padding:12px}
       <h1>Leads Dashboard</h1>
       <div class="sub" id="sl-status">Loading…</div>
     </div>
-    <div class="tabs" id="sl-tabs">
+    <div class="tabs" id="sl-tabs"><span class="tab-ind" id="tab-ind"></span>
       <button class="tab on" id="tab-leads">Leads</button>
       <button class="tab" id="tab-sales">Sales</button>
       <button class="tab" id="tab-clients">Clients</button>
       <button class="tab" id="tab-products">Products</button>
-      <button class="tab" id="tab-kaam">Kaam</button>
+      <button class="tab" id="tab-work">Work</button>
     </div>
   </div>
   <div id="sl-err" class="err"></div>
@@ -218,9 +319,9 @@ body{margin:0;background:#05070f;padding:12px}
       <label>From<input type="date" id="sl-from"></label>
       <label>To<input type="date" id="sl-to"></label>
       <button id="sl-all">All time</button>
-      <button id="sl-7">Last 7 din</button>
-      <button id="sl-30">Last 30 din</button>
-      <label>Search (naam / number)<input type="search" id="sl-q" placeholder="search…"></label>
+      <button id="sl-7">Last 7 days</button>
+      <button id="sl-30">Last 30 days</button>
+      <label>Search (name / number)<input type="search" id="sl-q" placeholder="search…"></label>
       <button class="refresh">Refresh</button>
     </div>
 
@@ -228,66 +329,66 @@ body{margin:0;background:#05070f;padding:12px}
     <div id="sl-search" class="card" style="display:none;margin-bottom:12px"></div>
 
     <div class="grid2">
-      <div class="card"><h2>Din ke hisaab se (average leads / din)</h2><div class="chart" id="sl-dow"></div></div>
-      <div class="card"><h2>Time ke hisaab se (total leads, IST ghanta)</h2><div class="scroll"><div class="chart wide" id="sl-hr"></div></div></div>
+      <div class="card"><h2>By day of week (average leads / day)</h2><div class="chart" id="sl-dow"></div></div>
+      <div class="card"><h2>By time of day (total leads, IST hour)</h2><div class="scroll"><div class="chart wide" id="sl-hr"></div></div></div>
     </div>
 
     <div class="card" style="margin-bottom:12px">
-      <h2>Har din ki leads (bar par click karo)</h2>
+      <h2>Leads per day (click a bar)</h2>
       <div class="scroll"><div class="daily" id="sl-daily"></div></div>
-      <div class="legend">Hara = sabse zyada &nbsp; Laal = sabse kam &nbsp; Grey = Sunday</div>
+      <div class="legend">Green = highest &nbsp; Red = lowest &nbsp; Grey = Sunday</div>
     </div>
 
     <div class="card">
       <div class="tbar">
-        <h2 style="margin:0">Din-wise table (row par click = leads ki list)</h2>
+        <h2 style="margin:0">Day-wise table (click a row to see its leads)</h2>
         <label>Sort
           <select id="sl-sort">
-            <option value="new">Naya pehle</option>
-            <option value="old">Purana pehle</option>
-            <option value="most">Zyada leads pehle</option>
-            <option value="least">Kam leads pehle</option>
+            <option value="new">Newest first</option>
+            <option value="old">Oldest first</option>
+            <option value="most">Most leads first</option>
+            <option value="least">Fewest leads first</option>
           </select>
         </label>
       </div>
-      <div class="tw"><table><thead><tr><th>Date</th><th>Din</th><th>Leads</th><th>Pehli lead</th><th>Aakhri lead</th></tr></thead><tbody id="sl-rows"></tbody></table></div>
-      <div class="note">Sab time India (IST) mein dikhaye gaye hain. "Order" tag = is number ka order, Order sheet mein mila.</div>
+      <div class="tw"><table><thead><tr><th>Date</th><th>Day</th><th>Leads</th><th>First lead</th><th>Last lead</th></tr></thead><tbody id="sl-rows"></tbody></table></div>
+      <div class="note">All times are shown in India time (IST). "Order" tag = an order from this number was found in the Order sheet.</div>
     </div>
   </div>
 
-  <!-- ============ SALES (Order sheet se) ============ -->
+  <!-- ============ SALES (from Order sheet) ============ -->
   <div id="sl-tab-sales" style="display:none">
     <div class="bar card">
       <label>Order date From<input type="date" id="sa-from"></label>
       <label>To<input type="date" id="sa-to"></label>
-      <label>Order status<select id="sa-status"><option value="">Sab</option></select></label>
+      <label>Order status<select id="sa-status"><option value="">All</option></select></label>
       <label>GST<select id="sa-gst">
-        <option value="">Sab</option>
-        <option value="with">GST ke saath</option>
-        <option value="without">Bina GST</option>
-        <option value="check">Check karo</option>
+        <option value="">All</option>
+        <option value="with">With GST</option>
+        <option value="without">Without GST</option>
+        <option value="check">Needs check</option>
       </select></label>
-      <label>Lead source<select id="sa-src"><option value="">Sab</option></select></label>
+      <label>Lead source<select id="sa-src"><option value="">All</option></select></label>
       <label>Search (client / company / number / product)<input type="search" id="sa-q" placeholder="search…"></label>
       <button id="sa-clear">Clear</button>
       <button class="refresh">Refresh</button>
     </div>
 
-    <div class="card mb"><h2>Is mahina vs pichhla mahina <span class="mu" id="sa-cmp-sub"></span></h2><div class="cmp" id="sa-cmp"></div></div>
+    <div class="card mb"><h2>This month vs last month <span class="mu" id="sa-cmp-sub"></span></h2><div class="cmp" id="sa-cmp"></div></div>
     <div class="kpis" id="sa-kpis"></div>
     <div class="kpis" id="sa-profit" style="display:none"></div>
 
     <div class="grid2">
-      <div class="card"><h2>Mahine ke hisaab se asli sale (bina GST / delivery)</h2><div class="scroll"><div class="chart" id="sa-month"></div></div></div>
+      <div class="card"><h2>Net sales by month (excl. GST / delivery)</h2><div class="scroll"><div class="chart" id="sa-month"></div></div></div>
       <div class="card"><h2>Order status</h2><div id="sa-split"></div></div>
     </div>
     <div class="grid2">
       <div class="card"><h2>Top products (orders)</h2><div id="sa-prod" class="wide-l"></div></div>
-      <div class="card"><h2>Lead source (orders · asli sale)</h2><div id="sa-srcs"></div></div>
+      <div class="card"><h2>Lead source (orders · net sales)</h2><div id="sa-srcs"></div></div>
     </div>
     <div class="grid2">
-      <div class="card"><h2>GST</h2><div id="sa-gsts"></div><h2 style="margin-top:18px">Payment kahan aaya</h2><div id="sa-pay"></div></div>
-      <div class="card"><h2>Delivery / Porter</h2><div id="sa-del"></div><div class="note">"By client" porter ka charge client ne khud diya — hamare hisaab mein count nahi hota. Delivery charge jo client se liya, woh Total mein hai par asli sale mein nahi gina.</div></div>
+      <div class="card"><h2>GST</h2><div id="sa-gsts"></div><h2 style="margin-top:18px">Payment received in</h2><div id="sa-pay"></div></div>
+      <div class="card"><h2>Delivery / Porter</h2><div id="sa-del"></div><div class="note">"By client" porter money was paid by the client directly to the porter — it is not counted or shown anywhere. Delivery charges collected from the client are in the Total but not counted in net sales or profit.</div></div>
     </div>
 
     <div class="card">
@@ -307,11 +408,11 @@ body{margin:0;background:#05070f;padding:12px}
     <div class="bar card">
       <label>Order date From<input type="date" id="cl-from"></label>
       <label>To<input type="date" id="cl-to"></label>
-      <label>Search (client / company / number / shehar)<input type="search" id="cl-q" placeholder="search…"></label>
+      <label>Search (client / company / number / city)<input type="search" id="cl-q" placeholder="search…"></label>
       <label>Sort<select id="cl-sort">
-        <option value="sale">Zyada sale pehle</option>
-        <option value="orders">Zyada orders pehle</option>
-        <option value="recent">Naya order pehle</option>
+        <option value="sale">Highest sales first</option>
+        <option value="orders">Most orders first</option>
+        <option value="recent">Latest order first</option>
       </select></label>
       <button id="cl-clear">Clear</button>
       <button class="refresh">Refresh</button>
@@ -319,16 +420,16 @@ body{margin:0;background:#05070f;padding:12px}
     <div class="kpis" id="cl-kpis"></div>
     <div class="card mb">
       <h2 id="cl-title">Clients</h2>
-      <div class="tw"><table class="stbl mtbl"><thead><tr><th>#</th><th>Client</th><th>Orders</th><th class="r">Asli sale</th><th>Pehla order</th><th>Aakhri order</th><th>Source</th><th>Shehar</th></tr></thead><tbody id="cl-rows"></tbody></table></div>
-      <div class="note">Client = same phone number (last 10 digits). Number na ho to naam + company se.</div>
+      <div class="tw"><table class="stbl mtbl"><thead><tr><th>#</th><th>Client</th><th>Orders</th><th class="r">Net sales</th><th>First order</th><th>Last order</th><th>Source</th><th>City</th></tr></thead><tbody id="cl-rows"></tbody></table></div>
+      <div class="note">Client = same phone number (last 10 digits). If there is no number, name + company is used.</div>
     </div>
     <div class="grid2">
-      <div class="card"><h2>Lead aane ke kitne din baad order aaya</h2><div id="cl-l2o"></div></div>
-      <div class="card"><h2>State</h2><div id="cl-state"></div><h2 style="margin-top:18px">Shehar</h2><div id="cl-city"></div></div>
+      <div class="card"><h2>Days from lead to order</h2><div id="cl-l2o"></div></div>
+      <div class="card"><h2>State</h2><div id="cl-state"></div><h2 style="margin-top:18px">City</h2><div id="cl-city"></div></div>
     </div>
     <div class="card">
-      <h2>Source ka asli faayda</h2>
-      <div class="tw"><table class="stbl mtbl"><thead><tr><th>Source</th><th class="r">Leads</th><th class="r">Orders</th><th class="r">Clients</th><th class="r">Conversion</th><th class="r">Asli sale</th><th class="r">Avg order</th><th class="r">Sale share</th><th class="r">Lead→order (din)</th></tr></thead><tbody id="cl-src"></tbody></table></div>
+      <h2>Source performance</h2>
+      <div class="tw"><table class="stbl mtbl"><thead><tr><th>Source</th><th class="r">Leads</th><th class="r">Orders</th><th class="r">Clients</th><th class="r">Conversion</th><th class="r">Net sales</th><th class="r">Avg order</th><th class="r">Sale share</th><th class="r">Lead→order (days)</th></tr></thead><tbody id="cl-src"></tbody></table></div>
       <div class="note" id="cl-src-note"></div>
     </div>
   </div>
@@ -340,9 +441,9 @@ body{margin:0;background:#05070f;padding:12px}
       <label>To<input type="date" id="pr-to"></label>
       <label>Search product<input type="search" id="pr-q" placeholder="search…"></label>
       <label>Sort<select id="pr-sort">
-        <option value="sale">Zyada sale pehle</option>
-        <option value="orders">Zyada orders pehle</option>
-        <option value="qty">Zyada quantity pehle</option>
+        <option value="sale">Highest sales first</option>
+        <option value="orders">Most orders first</option>
+        <option value="qty">Highest quantity first</option>
       </select></label>
       <button id="pr-clear">Clear</button>
       <button class="refresh">Refresh</button>
@@ -355,71 +456,87 @@ body{margin:0;background:#05070f;padding:12px}
     </div>
   </div>
 
-  <!-- ============ KAAM ============ -->
-  <div id="sl-tab-kaam" style="display:none">
+  <!-- ============ WORK ============ -->
+  <div id="sl-tab-work" style="display:none">
     <div class="bar card">
-      <span class="mu" style="flex:1;min-width:200px">Abhi ki halat — sab orders par (date filter nahi)</span>
+      <span class="mu" style="flex:1;min-width:200px">Current status — all orders (no date filter)</span>
       <button class="refresh">Refresh</button>
     </div>
     <div class="kpis" id="km-kpis"></div>
     <div class="card mb">
-      <h2 id="km-open-t">Kaam baaki (purane pehle)</h2>
-      <div class="tw"><table class="stbl mtbl"><thead><tr><th>Kitne din</th><th>Order date</th><th>Client</th><th>Product</th><th>Status</th><th>Delivery</th><th class="r">Pending</th></tr></thead><tbody id="km-open"></tbody></table></div>
-      <div class="note">Dispatch wale orders ke din, Dispatch Date se gine jaate hain (agar sheet mein ho), warna order date se.</div>
+      <h2 id="km-open-t">Pending work (oldest first)</h2>
+      <div class="tw"><table class="stbl mtbl"><thead><tr><th>Age</th><th>Order date</th><th>Client</th><th>Product</th><th>Status</th><th>Delivery</th><th class="r">Pending</th></tr></thead><tbody id="km-open"></tbody></table></div>
+      <div class="note">For dispatched orders, age is counted from the Dispatch Date (if in the sheet), otherwise from the order date.</div>
     </div>
     <div class="card mb">
-      <h2 id="km-pay-t">Paisa baaki</h2>
+      <h2 id="km-pay-t">Payment due</h2>
       <div id="km-pay-k"></div>
-      <div class="tw"><table class="stbl mtbl"><thead><tr><th>Client</th><th class="r">Pending</th><th class="r">Total</th><th>Order date</th><th>Kitne din se</th><th>Status</th><th>Payment</th></tr></thead><tbody id="km-pay"></tbody></table></div>
+      <div class="tw"><table class="stbl mtbl"><thead><tr><th>Client</th><th class="r">Pending</th><th class="r">Total</th><th>Order date</th><th>Due for</th><th>Status</th><th>Payment</th></tr></thead><tbody id="km-pay"></tbody></table></div>
     </div>
     <div class="card mb">
-      <h2>Delivery mein kitne din lagte hain</h2>
+      <h2>Delivery time</h2>
       <div id="km-del"></div>
     </div>
     <div class="card">
-      <h2 id="km-err-t">Sheet ki galtiyan</h2>
+      <h2 id="km-err-t">Sheet errors</h2>
       <div id="km-err-sum"></div>
-      <div class="tw"><table class="stbl mtbl"><thead><tr><th>Row</th><th>Client</th><th>Galti</th></tr></thead><tbody id="km-err"></tbody></table></div>
-      <div class="note">Row = Order sheet ki line number. Sheet mein theek karo, dashboard apne aap update ho jayega.</div>
+      <div class="tw"><table class="stbl mtbl"><thead><tr><th>Row</th><th>Client</th><th>Error</th></tr></thead><tbody id="km-err"></tbody></table></div>
+      <div class="note">Row = line number in the Order sheet. Fix it in the sheet and the dashboard updates automatically.</div>
     </div>
   </div>
 
   <!-- ============ EXTRA SHEETS (auto) ============ -->
   <div id="ex-wrap"></div>
+
+  <!-- ============ POPUP ============ -->
+  <div class="pop" id="pop">
+    <div class="card pop-card" id="pop-card">
+      <div class="pop-h">
+        <button id="pop-back" style="display:none">← Back</button>
+        <div><h2 id="pop-t"></h2><div class="mu" id="pop-s"></div></div>
+        <button class="pop-x" id="pop-x" aria-label="Close">✕</button>
+      </div>
+      <input type="search" id="pop-q" placeholder="Search in this list…">
+      <div id="pop-body" style="display:flex;flex-direction:column;min-height:0;flex:1">
+        <div class="tw" id="pop-tw"><table class="mtbl"><thead id="pop-head"></thead><tbody id="pop-rows"></tbody></table></div>
+        <div class="note" id="pop-more"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-/* ======================= SETTINGS (sirf yahan badlo) =======================
-   Link kaise nikalein: Google Sheet kholo > File > Share > Publish to web >
-   sahi tab chuno > "Comma-separated values (.csv)" > Publish > link copy karke neeche "" ke andar paste.
-   (Normal share link bhi chalega agar sheet "Anyone with the link" par share hai.)
-   Dashboard sirf DIKHATA hai — data badalna ho to Google Sheet mein badlo.
+/* ======================= SETTINGS (change only here) =======================
+   How to get a link: open the Google Sheet > File > Share > Publish to web >
+   choose the right tab > "Comma-separated values (.csv)" > Publish > copy the link and paste it inside the "" below.
+   (A normal share link also works if the sheet is shared as "Anyone with the link".)
+   The dashboard only DISPLAYS data — to change data, edit the Google Sheet.
 ============================================================================ */
 var SL_CONFIG = {
-  // 1) LEADS sheet ka link
+  // 1) LEADS sheet link
   LEADS_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRPD7MHOYZjkX7zdqbfYytuSixykQrFBcHqYBzPDqVKYr7Dkb_OPGfyp1jIjCnCCFeyb4E08MX6C7jq/pub?gid=950930653&single=true&output=csv",
 
-  // 2) ORDERS sheet ka link (Sales tab isi se banta hai)
+  // 2) ORDERS sheet link (the Sales tab is built from this)
   ORDERS_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSd2ugstIdSQrCyQhXQDYQw4Q8Dy_zH7zp0bcgZezOm-TQncMcqwtXaZe73lT2wPE_mwPnv7VtLCdHc/pub?gid=0&single=true&output=csv",
 
-  // 3) PURCHASE sheet ka link (product ka purchase rate). Columns: Product, Purchase Rate (aur chahe to Sale Rate).
-  //    Product ke naam se Order sheet ke products match honge aur Profit apne aap banega.
+  // 3) PURCHASE sheet link (purchase rate per product). Columns: Product, Purchase Rate (optionally Sale Rate).
+  //    Products are matched to the Order sheet by name and Profit is calculated automatically.
   PURCHASE_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSd2ugstIdSQrCyQhXQDYQw4Q8Dy_zH7zp0bcgZezOm-TQncMcqwtXaZe73lT2wPE_mwPnv7VtLCdHc/pub?gid=1834953584&single=true&output=csv",
 
-  // 4) Future ki nayi sheets — har sheet ke liye ek line. Har sheet ka apna tab banega
-  //    aur phone number se leads ke saath match hoga.
+  // 4) Future sheets — one line per sheet. Each sheet gets its own tab
+  //    and is matched with leads by phone number.
   EXTRA_SHEETS: [
     // { name: "Follow-ups", url: "" },
-    // { name: "Payments",   url: "", numberColumn: "Mobile No" }   // numberColumn = agar column ka naam alag ho
+    // { name: "Payments",   url: "", numberColumn: "Mobile No" }   // numberColumn = if the number column has a different name
   ],
 
-  GST_RATE: 18,                // GST % (Total mein GST hai ya nahi, ye dashboard khud match karke pata lagata hai)
-  REFRESH_MINUTES: 5,          // har kitne minute mein sheets dobara load ho (0 = band)
-  SHOW_NUMBERS: true,          // false = number chhupa ke dikhega (9198XXXX37)
-  OWN_NUMBERS: ["919717130237","918510003537","919891233778"], // apne numbers jo leads mein nahi ginne
-  DATE_ORDER: "DMY",           // sheet mein 05/10/2026 = 5 Oct ho to "DMY", 10 May ho to "MDY"
-  UNIQUE_LEADS: true,          // true = ek number ki sirf pehli lead gini jayegi
-  NO_TZ_ASSUMED: "+05:30"      // sheet ke time mein timezone na ho to IST maana jayega
+  GST_RATE: 18,                // GST % (the dashboard detects whether a Total includes GST by matching)
+  REFRESH_MINUTES: 5,          // reload sheets every N minutes (0 = off)
+  SHOW_NUMBERS: true,          // false = numbers are masked (9198XXXX37)
+  OWN_NUMBERS: ["919717130237","918510003537","919891233778"], // your own numbers, not counted as leads
+  DATE_ORDER: "DMY",           // if 05/10/2026 means 5 Oct use "DMY", if 10 May use "MDY"
+  UNIQUE_LEADS: true,          // true = only the first lead per number is counted
+  NO_TZ_ASSUMED: "+05:30"      // if the sheet time has no timezone, IST is assumed
 };
 /* ========================================================================= */
 
@@ -427,6 +544,7 @@ var SL_CONFIG = {
 "use strict";
 var C=SL_CONFIG;
 var DOW=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+var DOWL=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
 var DOWMAP={Mon:0,Tue:1,Wed:2,Thu:3,Fri:4,Sat:5,Sun:6};
 var MON={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
 var MNAME=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -434,7 +552,7 @@ var GR=(+C.GST_RATE||18)/100;
 var fmt=new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Kolkata",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false,weekday:"short"});
 
 var leads=[],LMAP={},days=[],view=[],orders=[],OMAP={},oview=[],extras=[],hasCost=false;
-var loading=false,loadedOnce=false,info={bad:0,sci:0,repeat:0};
+var loading=false,loadedOnce=false,loadAnimDone=false,info={bad:0,sci:0,repeat:0};
 
 function $(id){return document.getElementById(id)}
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
@@ -450,7 +568,7 @@ function parts(d){var o={};fmt.formatToParts(d).forEach(function(p){o[p.type]=p.
   var h=o.hour==="24"?"00":o.hour;
   return {day:o.year+"-"+o.month+"-"+o.day,hr:+h,dow:DOWMAP[o.weekday],time:h+":"+o.minute};}
 
-/* ---------- Date / time samajhna (ISO, 26/10/2026 14:30, 26-Oct-2026 2:30 PM, etc.) ---------- */
+/* ---------- Date / time parsing (ISO, 26/10/2026 14:30, 26-Oct-2026 2:30 PM, etc.) ---------- */
 var TM="(?:[T ,]+(\\d{1,2}):(\\d{2})(?::(\\d{2}))?(?:\\.\\d+)?\\s*([AaPp]\\.?[Mm]\\.?)?)?\\s*(Z|[+-]\\d\\d:?\\d\\d)?$";
 var RX=[
   new RegExp("^(\\d{4})[-/.](\\d{1,2})[-/.](\\d{1,2})"+TM),
@@ -514,7 +632,7 @@ function fetchCSV(u){
   return fetch(u+(u.indexOf("?")>-1?"&":"?")+"t="+Date.now(),{cache:"no-store"})
     .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.text()})
     .then(function(t){
-      if(/^\s*<(!doctype|html)/i.test(t))throw new Error("CSV nahi mila — sheet publish/share check karo");
+      if(/^\s*<(!doctype|html)/i.test(t))throw new Error("CSV not found — check the sheet's publish/share settings");
       return parseCSV(t);
     });
 }
@@ -543,7 +661,7 @@ function lineNum(line){   // "Diary ₹180/Pc" -> 180 , "Lollipop : qty: 2" -> 2
   return num(line);
 }
 function lines(s){return String(s==null?"":s).split(/\r?\n+/).map(function(x){return x.trim()}).filter(Boolean)}
-function splitTop(s){ // comma se todna, bracket ke andar wale comma chhod ke
+function splitTop(s){ // split on commas, ignoring commas inside brackets
   var out=[],cur="",dep=0;
   for(var i=0;i<s.length;i++){var c=s[i];
     if(c==="("||c==="[")dep++;else if((c===")"||c==="]")&&dep>0)dep--;
@@ -608,7 +726,7 @@ function buildLeads(raw){
   });
   if(C.UNIQUE_LEADS)for(var k in map)all.push(map[k]);
   all.sort(function(a,b){return a.t-b.t});
-  info.bad=bad;info.sci=sci;info.repeat=Object.keys(cnt).filter(function(k){return cnt[k]>1}).length;
+  info.bad=bad;info.sci=sci;info.repKeys={};Object.keys(cnt).forEach(function(k){if(cnt[k]>1)info.repKeys[k]=1});info.repeat=Object.keys(info.repKeys).length;
   return all;
 }
 
@@ -640,11 +758,11 @@ var ORDER_RULES=[
 function delivInfo(t){
   var s=clean(t),l=s.toLowerCase(),n=num(s);
   if(!s)return {kind:"none",d:0,label:"-"};
-  if(/client|customer|party|by them/.test(l))return {kind:"client",d:0,label:"By client"};
+  if(/client|customer|party|by them/.test(l))return {kind:"client",d:0,hid:n||0,label:"By client"};
   if(/pick\s*-?\s*up|itself|self/.test(l))return {kind:"pickup",d:0,label:"Pickup"};
-  if(/by sir|by us|own|hamari|khud/.test(l))return {kind:"own",d:n||0,label:"Khud delivery"};
+  if(/by sir|by us|own|hamari|khud/.test(l))return {kind:"own",d:n||0,label:"Own delivery"};
   if(n!=null&&n>0)return {kind:"charged",d:n,label:inr(n)+(/surface/.test(l)?" (Surface)":"")};
-  return {kind:"other",d:0,label:/extra|applicable|baad/.test(l)?"Extra / baad mein":s};
+  return {kind:"other",d:0,label:/extra|applicable|baad/.test(l)?"Extra / later":s};
 }
 function gstWord(s){
   s=String(s||"").toLowerCase();
@@ -653,12 +771,13 @@ function gstWord(s){
   return "";
 }
 function computeOrder(o){
-  var T=o.T,base=o.base,d=o.dv.d,word=o.gstHint,tol,best=null,why="";
+  var hid=o.dv.kind==="client"?(o.dv.hid||0):0;      // porter money the client paid directly to the porter
+  var T=o.T,base=o.base,d=o.dv.d||hid,word=o.gstHint,tol,best=null,why="";
   o.flags=[];
-  if((T==null||T===0)&&base!=null){T=base+d;o.flags.push("Total khali tha — Rate × Qty se lagaya");why="calc"}
-  if(T==null){T=0;o.flags.push("Amount khali")}
+  if((T==null||T===0)&&base!=null){T=base+d;o.flags.push("Total was blank — calculated from Rate × Qty");why="calc"}
+  if(T==null){T=0;o.flags.push("Amount blank")}
   o.Tcalc=T;
-  if(o.gstAmt!=null&&o.gstAmt>0){        // sheet mein GST amount column ho
+  if(o.gstAmt!=null&&o.gstAmt>0){        // sheet has a GST amount column
     o.gst=o.gstAmt;o.del=d&&T>d?d:0;o.mode="with";why="col";
   }else if(base!=null&&T>0&&!why){
     var c=[{g:0,dl:d,t:base+d,m:"without"},{g:base*GR,dl:d,t:base*(1+GR)+d,m:"with"}];
@@ -674,19 +793,19 @@ function computeOrder(o){
     else{o.gst=0;o.del=d&&T>d?d:0;o.mode=word==="no"?"without":"check";why=word==="no"?"word":"nomatch"}
   }
   o.why=why;
+  o.hidden=0;
+  if(hid){   // paid by client to porter — not our sale, not delivery, not shown in Total
+    o.hidden=(why==="match"||why==="calc")?o.del:0;
+    o.del=0;T=Math.max(0,T-o.hidden);o.Tcalc=T;
+  }
   o.extra=base!=null?Math.max(0,T-o.gst-o.del-base):0;
   if(o.extra<1)o.extra=0;
   o.net=Math.max(0,T-o.gst-o.del);
-  if(o.mode==="check"&&base==null)o.flags.push("Rate / Qty se hisaab nahi ban paya.");
+  if(o.mode==="check"&&base==null)o.flags.push("Could not calculate from Rate / Qty.");
   return calcProfit(o);
 }
-function calcProfit(o){   // Profit = asli sale + delivery liya − purchase − porter (jo humne diya)
-  o.ourShip=o.del;   // porter ka asli kharcha na likha ho to: jitna delivery liya, utna courier ko gaya
-  if(o.shipCost!=null){
-    var byClient=o.shipBy?/client|customer|party/i.test(o.shipBy):o.dv.kind==="client";
-    o.ourShip=byClient?0:o.shipCost;
-  }
-  o.profit=o.purchase!=null?o.net+o.del-o.purchase-o.ourShip:null;
+function calcProfit(o){   // Profit = net sales − purchase (delivery charges and porter money are not included)
+  o.profit=o.purchase!=null?o.net-o.purchase:null;
   return o;
 }
 var OCOL={};
@@ -694,14 +813,14 @@ function ordersFromRows(rows){
   var h=0;while(h<rows.length&&isBlank(rows[h]))h++;
   if(h>=rows.length)return [];
   var ix=classify(rows[h],ORDER_RULES);
-  if(ix.num===undefined&&ix.name===undefined)throw new Error("Order sheet mein 'Contact Number' / 'Client Name' column nahi mila");
+  if(ix.num===undefined&&ix.name===undefined)throw new Error("Could not find a 'Contact Number' / 'Client Name' column in the Order sheet");
   OCOL=ix;
   function g(r,k){return ix[k]===undefined?"":String(r[ix[k]]==null?"":r[ix[k]]).trim()}
   var out=[];
   rows.slice(h+1).forEach(function(r,i){
     if(isBlank(r))return;
     var name=clean(g(r,"name")),company=clean(g(r,"company")),numS=g(r,"num"),prod=g(r,"product"),tt=g(r,"total");
-    if(!name&&!company&&!digits(numS)&&!clean(prod)&&!clean(tt))return;   // khali / sirf status wali row
+    if(!name&&!company&&!digits(numS)&&!clean(prod)&&!clean(tt))return;   // blank row / row with only a status
     var plist=productList(prod).map(function(x){return clean(x).replace(/[\s,;:+\-]+$/,"")}).filter(Boolean);
     var rl=lines(g(r,"rate")),ql=qtyList(g(r,"qty"));
     var rates=rl.map(lineNum),qtys=ql.map(lineNum),base=null,items=[];
@@ -751,7 +870,7 @@ function extraFromRows(rows,cfg){
   if(cfg.numberColumn){var want=String(cfg.numberColumn).toLowerCase().trim();
     hdr.forEach(function(h,i){if(ni<0&&h.toLowerCase()===want)ni=i})}
   if(ni<0)hdr.forEach(function(h,i){var l=h.toLowerCase();if(ni<0&&NUM_RX.test(l)&&!/name|naam/.test(l))ni=i});
-  if(ni<0)throw new Error("'Number' column nahi mila");
+  if(ni<0)throw new Error("'Number' column not found");
   var out=[],map={};
   rows.slice(1).forEach(function(r){
     var o={k:key(r[ni]),cells:hdr.map(function(_,i){return String(r[i]==null?"":r[i]).trim()})};
@@ -761,28 +880,30 @@ function extraFromRows(rows,cfg){
 }
 
 /* ---------- Common bits ---------- */
-function kpi(v,l,s,cls){return '<div class="card kpi'+(cls?" "+cls:"")+'"><div class="v">'+v+'</div><div class="l">'+l+'</div><div class="s">'+s+'</div></div>'}
+var POPS={},popN=0;
+function P(fn){var id="p"+(++popN);POPS[id]=fn;return id}
+function kpi(v,l,s,cls,pop){return '<div class="card kpi'+(cls?" "+cls:"")+(pop?' clk" data-pop="'+P(pop):'')+'"><div class="v">'+v+'</div><div class="l">'+l+'</div><div class="s">'+s+'</div></div>'}
 function orderPill(k){
   var o=k&&OMAP[k];
-  return o?'<span class="st conv" title="'+inr(o.net)+' asli sale">Order ('+o.n+')</span>':'<span class="st pen">No order</span>';
+  return o?'<span class="st conv" title="'+inr(o.net)+' net sales">Order ('+o.n+')</span>':'<span class="st pen">No order</span>';
 }
 function sheetTags(k){
   return extras.map(function(x){return x.data&&x.data.map[k]?'<span class="tag">'+esc(x.cfg.name)+'</span>':""}).join("");
 }
-function bars(id,vals,labels,show){
+function bars(id,vals,labels,show,pops){
   var mx=Math.max.apply(null,vals.concat(0)),mn=Math.min.apply(null,vals.concat(mx));
   $(id).innerHTML=vals.map(function(v,i){
     var h=mx?Math.max(v/mx*100,v?2:0):0;
     var c=vals.length>1&&mx>0&&v===mx?" max":(vals.length>1&&mx>0&&v===mn?" min":"");
-    return '<div class="col"><div class="n">'+(show?show[i]:v)+'</div><div class="b'+c+'" style="height:'+h+'%"></div><div class="x">'+labels[i]+'</div></div>';
+    return '<div class="col'+(pops&&pops[i]?' clk" data-pop="'+P(pops[i]):'')+'"><div class="n">'+(show?show[i]:v)+'</div><div class="b'+c+'" style="height:'+h+'%"></div><div class="x">'+labels[i]+'</div></div>';
   }).join("");
 }
-function hb(label,val,pct,cls){
-  return '<div class="hb"><span title="'+esc(label)+'">'+esc(label)+'</span><div class="tr"><i class="'+(cls||"")+'" style="width:'+Math.min(100,pct||0)+'%"></i></div><b>'+val+'</b></div>';
+function hb(label,val,pct,cls,pop){
+  return '<div class="hb'+(pop?' clk" data-pop="'+P(pop):'')+'"><span title="'+esc(label)+'">'+esc(label)+'</span><div class="tr"><i class="'+(cls||"")+'" style="width:'+Math.min(100,pct||0)+'%"></i></div><b>'+val+'</b></div>';
 }
 function groupList(list,keyFn,valFn){
   var m={};
-  list.forEach(function(o){var k=keyFn(o)||"(khali)";var x=m[k]=m[k]||{k:k,n:0,v:0};x.n++;x.v+=valFn?valFn(o):0});
+  list.forEach(function(o){var k=keyFn(o)||"(blank)";var x=m[k]=m[k]||{k:k,n:0,v:0};x.n++;x.v+=valFn?valFn(o):0});
   return Object.keys(m).map(function(k){return m[k]}).sort(function(a,b){return b.n-a.n||b.v-a.v});
 }
 
@@ -791,7 +912,7 @@ function renderLeads(){
   if(!leads.length){
     ["sl-kpis","sl-dow","sl-hr","sl-daily","sl-rows"].forEach(function(id){$(id).innerHTML=""});
     $("sl-search").style.display="none";days=[];view=[];
-    $("sl-status").textContent=!C.LEADS_CSV_URL?"Leads sheet ka URL abhi nahi daala gaya":(loadedOnce?"Leads sheet mein abhi koi lead nahi mili":"Loading…");
+    $("sl-status").textContent=!C.LEADS_CSV_URL?"Leads sheet URL has not been added yet":(loadedOnce?"No leads found in the Leads sheet yet":"Loading…");
     return;
   }
   var today=parts(new Date()).day,last=leads[leads.length-1].day;
@@ -815,19 +936,19 @@ function renderLeads(){
   var conv=view.filter(function(l){return OMAP[l.k]}).length;
 
   $("sl-kpis").innerHTML=
-    kpi(total,"Total leads"+(C.UNIQUE_LEADS?" (unique)":""),niceDate(s)+" se "+niceDate(e))+
-    kpi((total/nd).toFixed(1),"Average leads / din",nd+" din")+
-    kpi(todayN,"Aaj ki leads",niceDate(today))+
-    kpi(best.list.length,"Sabse zyada (ek din)",niceDate(best.day)+" ("+DOW[best.dow]+")")+
-    kpi(worst.list.length,"Sabse kam (ek din)",niceDate(worst.day)+" ("+DOW[worst.dow]+")")+
-    kpi(DOW[bd],"Best din (avg)",da[bd].toFixed(1)+" leads/din")+
-    kpi(DOW[wd],"Sabse kam din (avg)",da[wd].toFixed(1)+" leads/din")+
-    kpi(hmax?pad(ph)+":00–"+pad((ph+1)%24)+":00":"-","Peak time (IST)",hmax+" leads")+
-    kpi(conv,"Order mile (is range)",total?(conv/total*100).toFixed(1)+"% leads ka order aaya":"-")+
-    kpi(info.repeat,"Repeat numbers","ek se zyada baar aaye");
+    kpi(total,"Total leads"+(C.UNIQUE_LEADS?" (unique)":""),niceDate(s)+" to "+niceDate(e),"",function(){return {t:"All leads",s:niceDate(s)+" to "+niceDate(e),type:"leads",list:view}})+
+    kpi((total/nd).toFixed(1),"Average leads / day",nd+" days","",function(){return {t:"Leads per day",type:"days",list:days.slice().reverse()}})+
+    kpi(todayN,"Today's leads",niceDate(today),"",function(){return {t:"Today's leads",s:niceDate(today),type:"leads",list:leads.filter(function(l){return l.day===today})}})+
+    kpi(best.list.length,"Highest (single day)",niceDate(best.day)+" ("+DOW[best.dow]+")","",function(){return {t:"Leads on "+niceDate(best.day),type:"leads",list:best.list}})+
+    kpi(worst.list.length,"Lowest (single day)",niceDate(worst.day)+" ("+DOW[worst.dow]+")","",function(){return {t:"Leads on "+niceDate(worst.day),type:"leads",list:worst.list}})+
+    kpi(DOW[bd],"Best day (avg)",da[bd].toFixed(1)+" leads/day","",function(){return {t:"Leads on "+DOWL[bd]+"s",type:"leads",list:view.filter(function(l){return l.dow===bd})}})+
+    kpi(DOW[wd],"Weakest day (avg)",da[wd].toFixed(1)+" leads/day","",function(){return {t:"Leads on "+DOWL[wd]+"s",type:"leads",list:view.filter(function(l){return l.dow===wd})}})+
+    kpi(hmax?pad(ph)+":00–"+pad((ph+1)%24)+":00":"-","Peak time (IST)",hmax+" leads","",function(){return {t:"Leads between "+pad(ph)+":00 and "+pad((ph+1)%24)+":00",type:"leads",list:view.filter(function(l){return l.hr===ph})}})+
+    kpi(conv,"Ordered (this range)",total?(conv/total*100).toFixed(1)+"% of leads placed an order":"-","",function(){return {t:"Leads that placed an order",type:"leads",list:view.filter(function(l){return OMAP[l.k]})}})+
+    kpi(info.repeat,"Repeat numbers","came in more than once","",function(){return {t:"Repeat numbers",s:"These numbers came in more than once",type:"leads",list:leads.filter(function(l){return info.repKeys[l.k]})}});
 
-  bars("sl-dow",da.map(function(v){return +v.toFixed(1)}),DOW);
-  bars("sl-hr",hs,hs.map(function(_,i){return i}));
+  bars("sl-dow",da.map(function(v){return +v.toFixed(1)}),DOW,null,DOW.map(function(_,i){return function(){return {t:"Leads on "+DOWL[i]+"s",type:"leads",list:view.filter(function(l){return l.dow===i})}}}));
+  bars("sl-hr",hs,hs.map(function(_,i){return i}),null,hs.map(function(_,i){return function(){return {t:"Leads between "+pad(i)+":00 and "+pad((i+1)%24)+":00",type:"leads",list:view.filter(function(l){return l.hr===i})}}}));
 
   var cnts=days.map(function(x){return x.list.length});
   var mx=Math.max.apply(null,cnts),mn=Math.min.apply(null,cnts);
@@ -851,7 +972,7 @@ function drawRows(){
   }).join("");
 }
 function leadTable(list,withDate){
-  return '<table><thead><tr>'+(withDate?'<th>Date</th>':'<th>#</th>')+'<th>Time (IST)</th><th>Naam</th><th>Number</th><th>Order</th></tr></thead><tbody>'+
+  return '<table><thead><tr>'+(withDate?'<th>Date</th>':'<th>#</th>')+'<th>Time (IST)</th><th>Name</th><th>Number</th><th>Order</th></tr></thead><tbody>'+
     list.map(function(l,i){return '<tr><td>'+(withDate?niceDate(l.day):(i+1))+'</td><td>'+l.time+'</td><td>'+(esc(l.name)||"-")+'</td><td>'+mask(l.num)+'</td><td>'+orderPill(l.k)+sheetTags(l.k)+'</td></tr>'}).join("")+
     '</tbody></table>';
 }
@@ -861,7 +982,7 @@ function toggle(day){
   var nx=tr.nextElementSibling;
   if(nx&&nx.classList.contains("det")){nx.remove();return}
   var x=days.filter(function(d){return d.day===day})[0];if(!x)return;
-  var html=x.list.length?leadTable(x.list,false):'<div style="padding:10px;color:#9aa4c7">Is din koi lead nahi aayi.</div>';
+  var html=x.list.length?leadTable(x.list,false):'<div style="padding:10px;color:#9aa4c7">No leads on this day.</div>';
   var d=document.createElement("tr");d.className="det";d.innerHTML='<td colspan="5"><div class="det-in">'+html+'</div></td>';
   tr.parentNode.insertBefore(d,tr.nextSibling);
 }
@@ -871,7 +992,7 @@ function doSearch(){
   var qd=q.replace(/\D/g,"");
   var r=view.filter(function(l){return l.name.toLowerCase().indexOf(q)>-1||(qd&&l.num.indexOf(qd)>-1)});
   box.style.display="block";
-  box.innerHTML='<h2>Search: '+r.length+' mile</h2>'+(r.length?'<div class="tw" style="max-height:260px">'+leadTable(r.slice(0,300),true)+'</div>':'');
+  box.innerHTML='<h2>Search: '+r.length+' found</h2>'+(r.length?'<div class="tw" style="max-height:260px">'+leadTable(r.slice(0,300),true)+'</div>':'');
 }
 function setRange(n){
   if(!n){$("sl-from").value="";$("sl-to").value=""}
@@ -882,7 +1003,7 @@ function setRange(n){
 /* ======================= SALES TAB (Orders) ======================= */
 function fillSelect(id,vals){
   var s=$(id),cur=s.value;
-  s.innerHTML='<option value="">Sab</option>'+vals.map(function(v){return '<option>'+esc(v)+'</option>'}).join("");
+  s.innerHTML='<option value="">All</option>'+vals.map(function(v){return '<option>'+esc(v)+'</option>'}).join("");
   if(vals.indexOf(cur)>-1)s.value=cur;
 }
 function renderSales(){
@@ -890,7 +1011,7 @@ function renderSales(){
     ["sa-kpis","sa-month","sa-split","sa-prod","sa-srcs","sa-gsts","sa-pay","sa-del","sa-head"].forEach(function(id){$(id).innerHTML=""});
     $("sa-profit").style.display="none";
     $("sa-title").textContent="Orders";
-    $("sa-rows").innerHTML='<tr><td class="mu" style="padding:16px">'+(!C.ORDERS_CSV_URL?"ORDERS_CSV_URL abhi khali hai — code ke upar SL_CONFIG mein Order sheet ka link daalo.":(loadedOnce?"Order sheet mein koi order nahi mila.":"Loading…"))+'</td></tr>';
+    $("sa-rows").innerHTML='<tr><td class="mu" style="padding:16px">'+(!C.ORDERS_CSV_URL?"ORDERS_CSV_URL is empty — add the Order sheet link in SL_CONFIG at the top of the code.":(loadedOnce?"No orders found in the Order sheet.":"Loading…"))+'</td></tr>';
     $("sa-note").textContent="";$("sa-cmp").innerHTML="";
     return;
   }
@@ -902,7 +1023,7 @@ function renderSales(){
     if((f||t)&&!o.day)return false;
     return (!f||o.day>=f)&&(!t||o.day<=t);
   });
-  // KPIs + charts sirf date filter par; table par baaki filters bhi
+  // KPIs + charts use only the date filter; the table uses all filters
   var tot=base.length,bill=0,net=0,gst=0,del=0,pend=0,pendN=0,gstN=0,clientN=0,chk=0,fromLead=0,clients={};
   base.forEach(function(o){
     bill+=o.Tcalc;net+=o.net;gst+=o.gst;del+=o.del;
@@ -916,42 +1037,42 @@ function renderSales(){
   var leadOrdered={};orders.forEach(function(o){if(o.k&&LMAP[o.k])leadOrdered[o.k]=1});
   var nLO=Object.keys(leadOrdered).length;
   $("sa-kpis").innerHTML=
-    kpi(tot,"Total orders",nClients+" clients"+(f||t?" • is range mein":""))+
-    kpi(inr(bill),"Total billing","sheet ka Total Amount")+
-    kpi(inr(net),"Asli sale","bina GST aur delivery ke","good")+
-    kpi(inr(gst),"GST ("+Math.round(GR*100)+"%)",gstN+" orders GST wale")+
-    kpi(inr(del),"Delivery (client se liya)","sale mein count nahi • "+clientN+" porter by client")+
-    kpi(tot?inr(net/tot):"-","Average order","asli sale / order")+
-    kpi(inr(pend),"Pending amount",pendN+" orders mein baaki",pend>0?"warn":"")+
-    kpi(fromLead,"Leads se aaye orders",leads.length?nLO+" leads ka order • "+(nLO/leads.length*100).toFixed(1)+"% conversion":"Leads sheet jodo")+
-    (chk?kpi(chk,"Check karo","GST / amount clear nahi","warn"):"");
+    kpi(tot,"Total orders",nClients+" clients"+(f||t?" • in this range":""),"",OP("All orders",base))+
+    kpi(inr(bill),"Total billing","Total Amount from the sheet","",OP("Orders by total amount",base,null,"total"))+
+    kpi(inr(net),"Net sales","excl. GST and delivery","good",OP("Orders by net sales",base,null,"net"))+
+    kpi(inr(gst),"GST ("+Math.round(GR*100)+"%)",gstN+" orders with GST","",OP("Orders with GST",base,function(o){return o.mode==="with"}))+
+    kpi(inr(del),"Delivery (charged to client)","not counted in sales • "+clientN+" porter by client","",OP("Orders with a delivery charge",base,function(o){return o.del>0}))+
+    kpi(tot?inr(net/tot):"-","Average order","net sales / order","",OP("Orders by net sales",base,null,"net"))+
+    kpi(inr(pend),"Pending amount",pendN+" orders pending",pend>0?"warn":"",OP("Orders with pending amount",base,function(o){return o.pending>0},"pending"))+
+    kpi(fromLead,"Orders from leads",leads.length?nLO+" leads ordered • "+(nLO/leads.length*100).toFixed(1)+"% conversion":"Connect the Leads sheet","",OP("Orders from leads",base,function(o){return o.k&&LMAP[o.k]}))+
+    (chk?kpi(chk,"Needs check","GST / amount unclear","warn",OP("Orders that need a check",base,function(o){return o.mode==="check"})):"");
 
-  // Profit (sirf jab Purchase / Porter cost column ho)
+  // Profit (only when purchase data is available)
   var pb=$("sa-profit");
   if(hasCost){
     var withP=base.filter(function(o){return o.profit!=null});
-    var pur=0,ship=0,prof=0,pnet=0;
-    withP.forEach(function(o){pur+=o.purchase;ship+=o.ourShip;prof+=o.profit;pnet+=o.net+o.del});
+    var pur=0,prof=0,pnet=0;
+    withP.forEach(function(o){pur+=o.purchase;prof+=o.profit;pnet+=o.net});
     pb.style.display="";
-    pb.innerHTML=kpi(inr(pur),"Purchase (kharcha)",withP.length+" orders mein bhara")+
-      kpi(inr(ship),"Porter / delivery (humne diya)",OCOL.shipCost!==undefined?"client wala count nahi":"= jo delivery client se liya")+
-      kpi(inr(prof),"Profit","asli sale + delivery liya − purchase − porter",prof>=0?"good":"warn")+
-      kpi(pnet?(prof/pnet*100).toFixed(1)+"%":"-","Margin","profit / (sale + delivery)")+
-      (tot-withP.length?kpi(tot-withP.length,"Purchase khali","in orders ka profit nahi gina","warn"):"");
+    pb.innerHTML=kpi(inr(pur),"Purchase (cost)",withP.length+" orders filled","",OP("Orders with purchase cost",withP,null,"purchase"))+
+      kpi(inr(prof),"Profit","net sales − purchase",prof>=0?"good":"warn",OP("Orders by profit",withP,null,"profit"))+
+      kpi(pnet?(prof/pnet*100).toFixed(1)+"%":"-","Margin","profit / net sales","",OP("Orders by profit",withP,null,"profit"))+
+      (tot-withP.length?kpi(tot-withP.length,"Purchase missing","profit not counted for these orders","warn",OP("Orders without purchase cost",base,function(o){return o.profit==null})):"");
   }else{pb.style.display="none";pb.innerHTML=""}
 
-  // Mahine ke hisaab se
+  // By month
   var mm={};base.forEach(function(o){if(!o.day)return;var k=o.day.slice(0,7);(mm[k]=mm[k]||{v:0,n:0});mm[k].v+=o.net;mm[k].n++});
   var mk=Object.keys(mm).sort();
   if(mk.length){
     var all=[];for(var m=mk[0],g2=0;m<=mk[mk.length-1]&&g2<120;g2++){all.push(m);var y=+m.slice(0,4),mo=+m.slice(5);mo++;if(mo>12){mo=1;y++}m=y+"-"+pad(mo)}
     bars("sa-month",all.map(function(k){return mm[k]?mm[k].v:0}),all.map(function(k){return MNAME[+k.slice(5)-1]+" "+k.slice(2,4)}),
-      all.map(function(k){return mm[k]?inrK(mm[k].v)+" · "+mm[k].n:"0"}));
+      all.map(function(k){return mm[k]?inrK(mm[k].v)+" · "+mm[k].n:"0"}),
+      all.map(function(k){return OP("Orders in "+MNAME[+k.slice(5)-1]+" "+k.slice(0,4),base,function(o){return o.day&&o.day.slice(0,7)===k})}));
     $("sa-month").style.minWidth=Math.max(0,all.length*64)+"px";
-  }else $("sa-month").innerHTML='<div class="mu">Orders mein date nahi hai.</div>';
+  }else $("sa-month").innerHTML='<div class="mu">Orders have no dates.</div>';
 
   var sg=groupList(base,function(o){return o.status});
-  $("sa-split").innerHTML=sg.map(function(x){return hb(x.k,x.n+' <span class="mu">('+(tot?Math.round(x.n/tot*100):0)+'%)</span>',tot?x.n/tot*100:0,stCls(x.k))}).join("");
+  $("sa-split").innerHTML=sg.map(function(x){return hb(x.k,x.n+' <span class="mu">('+(tot?Math.round(x.n/tot*100):0)+'%)</span>',tot?x.n/tot*100:0,stCls(x.k),OP("Status: "+x.k,base,function(o){return o.status===x.k}))}).join("");
 
   var pm={};
   base.forEach(function(o){
@@ -967,27 +1088,27 @@ function renderSales(){
   var pl=Object.keys(pm).map(function(k){var p=pm[k];p.name=Object.keys(p.names).sort(function(a,b){return p.names[b]-p.names[a]})[0];return p})
     .sort(function(a,b){return b.n-a.n||b.v-a.v}).slice(0,8);
   var pmx=pl.length?pl[0].n:0;
-  $("sa-prod").innerHTML=pl.length?pl.map(function(p){return hb(p.name,p.n+' <span class="mu">· '+inrK(p.v)+'</span>',pmx?p.n/pmx*100:0)}).join(""):'<div class="mu">Product data nahi hai.</div>';
+  $("sa-prod").innerHTML=pl.length?pl.map(function(p){return hb(p.name,p.n+' <span class="mu">· '+inrK(p.v)+'</span>',pmx?p.n/pmx*100:0,"",OP(p.name,base,hasProd(p.name)))}).join(""):'<div class="mu">No product data.</div>';
 
   var srcg=groupList(base,function(o){return o.source},function(o){return o.net});
   var smx=srcg.length?srcg[0].n:0;
-  $("sa-srcs").innerHTML=srcg.map(function(x){return hb(x.k,x.n+' <span class="mu">· '+inrK(x.v)+'</span>',smx?x.n/smx*100:0)}).join("");
+  $("sa-srcs").innerHTML=srcg.map(function(x){return hb(x.k,x.n+' <span class="mu">· '+inrK(x.v)+'</span>',smx?x.n/smx*100:0,"",OP("Source: "+x.k,base,function(o){return (o.source||"(blank)")===x.k}))}).join("");
 
-  var gl={with:"GST ke saath",without:"Bina GST",check:"Check karo"},gc={with:"conv",without:"disp",check:"fu"};
+  var gl={with:"With GST",without:"Without GST",check:"Needs check"},gc={with:"conv",without:"disp",check:"fu"};
   $("sa-gsts").innerHTML=["with","without","check"].map(function(k){
     var l=base.filter(function(o){return o.mode===k});if(!l.length&&k==="check")return "";
     var v=l.reduce(function(a,o){return a+o.net},0);
-    return hb(gl[k],l.length+' <span class="mu">· '+inrK(v)+'</span>',tot?l.length/tot*100:0,gc[k]);
+    return hb(gl[k],l.length+' <span class="mu">· '+inrK(v)+'</span>',tot?l.length/tot*100:0,gc[k],OP(gl[k],l));
   }).join("");
 
   var payg=groupList(base,function(o){return o.payment},function(o){return o.Tcalc});
   var pmx2=payg.length?payg[0].n:0;
-  $("sa-pay").innerHTML=payg.map(function(x){return hb(x.k,x.n+' <span class="mu">· '+inrK(x.v)+'</span>',pmx2?x.n/pmx2*100:0)}).join("");
+  $("sa-pay").innerHTML=payg.map(function(x){return hb(x.k,x.n+' <span class="mu">· '+inrK(x.v)+'</span>',pmx2?x.n/pmx2*100:0,"",OP("Payment: "+x.k,base,function(o){return (o.payment||"(blank)")===x.k}))}).join("");
 
-  var dl={client:"Porter (by client)",charged:"Delivery charge liya",pickup:"Pickup",own:"Khud delivery",other:"Extra / baad mein",none:"Khali"};
+  var dl={client:"Porter (by client)",charged:"Delivery charged",pickup:"Pickup",own:"Own delivery",other:"Extra / later",none:"Blank"};
   var dc={client:"pen",charged:"disp",pickup:"conv",own:"conv",other:"fu",none:"pen"};
   var dg=groupList(base,function(o){return o.dv.kind},function(o){return o.del});
-  $("sa-del").innerHTML=dg.map(function(x){return hb(dl[x.k]||x.k,x.n+(x.v?' <span class="mu">· '+inrK(x.v)+'</span>':''),tot?x.n/tot*100:0,dc[x.k])}).join("");
+  $("sa-del").innerHTML=dg.map(function(x){return hb(dl[x.k]||x.k,x.n+(x.v?' <span class="mu">· '+inrK(x.v)+'</span>':''),tot?x.n/tot*100:0,dc[x.k],OP("Delivery: "+(dl[x.k]||x.k),base,function(o){return o.dv.kind===x.k}))}).join("");
 
   // Table
   oview=base.filter(function(o){
@@ -999,14 +1120,14 @@ function renderSales(){
     return hay.indexOf(q)>-1||(qd.length>=3&&o.num.indexOf(qd)>-1);
   }).sort(function(a,b){return (b.day||"").localeCompare(a.day||"")||b.i-a.i});
   var cols=hasCost?13:12;
-  $("sa-head").innerHTML='<tr><th>Date</th><th>Client</th><th>Product</th><th>Qty</th><th class="r">Rate × Qty</th><th>Delivery</th><th>GST</th><th class="r">Total</th><th class="r">Asli sale</th>'+(hasCost?'<th class="r">Profit</th>':'')+'<th>Payment</th><th>Status</th><th>Lead</th></tr>';
+  $("sa-head").innerHTML='<tr><th>Date</th><th>Client</th><th>Product</th><th>Qty</th><th class="r">Rate × Qty</th><th>Delivery</th><th>GST</th><th class="r">Total</th><th class="r">Net sales</th>'+(hasCost?'<th class="r">Profit</th>':'')+'<th>Payment</th><th>Status</th><th>Lead</th></tr>';
   var sum={T:0,n:0};oview.forEach(function(o){sum.T+=o.Tcalc;sum.n+=o.net});
-  $("sa-title").textContent="Orders ("+oview.length+") • Total "+inr(sum.T)+" • Asli sale "+inr(sum.n);
+  $("sa-title").textContent="Orders ("+oview.length+") • Total "+inr(sum.T)+" • Net sales "+inr(sum.n);
   $("sa-rows").innerHTML=oview.slice(0,400).map(function(o,i){
-    var gstCell=o.mode==="with"?'<span class="st conv">GST '+inr(o.gst)+'</span>':o.mode==="without"?'<span class="st disp">Bina GST</span>':'<span class="st fu">Check karo</span>';
+    var gstCell=o.mode==="with"?'<span class="st conv">GST '+inr(o.gst)+'</span>':o.mode==="without"?'<span class="st disp">Without GST</span>':'<span class="st fu">Needs check</span>';
     var qty=o.items.map(function(it){return it.qty!=null?it.qty:""}).filter(String).join(", ")||esc(clean(o.qtyText))||"-";
     var lead=o.k&&LMAP[o.k];
-    return '<tr class="ord" data-i="'+i+'"><td class="nw">'+(o.day?niceDate(o.day):'<span class="mu">'+(esc(o.rawDate)||"Date nahi")+'</span>')+'</td>'+
+    return '<tr class="ord" data-i="'+i+'"><td class="nw">'+(o.day?niceDate(o.day):'<span class="mu">'+(esc(o.rawDate)||"No date")+'</span>')+'</td>'+
       '<td><b>'+(esc(o.name)||"-")+'</b>'+(o.company?'<br><span class="mu">'+esc(o.company)+'</span>':'')+'<br><span class="mu">'+(mask(o.num)||"-")+'</span>'+(o.k&&sheetTags(o.k)?'<br>'+sheetTags(o.k):'')+'</td>'+
       '<td class="prod">'+(esc(o.products.join("\n"))||"-")+'</td>'+
       '<td>'+esc(qty)+'</td>'+
@@ -1019,31 +1140,31 @@ function renderSales(){
       '<td>'+(esc(o.payment)||"-")+(o.pending>0?'<br><span class="st fu">Pending '+inr(o.pending)+'</span>':'')+'</td>'+
       '<td><span class="st '+stCls(o.status)+'">'+esc(o.status)+'</span></td>'+
       '<td>'+(lead?'<span class="tag">Lead '+niceDate(lead.day)+'</span>':'<span class="mu">-</span>')+'</td></tr>';
-  }).join("")||'<tr><td colspan="'+cols+'" class="mu" style="padding:16px">Koi order nahi mila.</td></tr>';
-  $("sa-note").textContent=(oview.length>400?"Pehle 400 orders dikh rahe hain — filter use karo.  ":"")+
-    "Row par click = poora hisaab. Asli sale = Total − GST − delivery charge. GST tab maana jata hai jab Total = Rate × Qty + "+Math.round(GR*100)+"% (+ delivery) se match kare, ya Total mein \"with GST\" likha ho.";
+  }).join("")||'<tr><td colspan="'+cols+'" class="mu" style="padding:16px">No orders found.</td></tr>';
+  $("sa-note").textContent=(oview.length>400?"Showing the first 400 orders — use filters.  ":"")+
+    "Click a row for the full breakdown. Net sales = Total − GST − delivery charge. GST is assumed when the Total matches Rate × Qty + "+Math.round(GR*100)+"% (+ delivery), or the Total says \"with GST\".";
 }
 function orderDetail(o){
   var R=Math.round(GR*100),c=[];
   if(o.base!=null)c.push("Rate × Qty = "+inr(o.base));
   if(o.gst)c.push("GST "+R+"% = "+inr(o.gst));
   if(o.del)c.push("Delivery = "+inr(o.del));
-  if(o.extra)c.push((o.mode==="check"?"Farak (match nahi) = ":"Extra / design = ")+inr(o.extra));
+  if(o.extra)c.push((o.mode==="check"?"Difference (no match) = ":"Extra / design = ")+inr(o.extra));
   c.push("<strong>Total = "+inr(o.Tcalc)+"</strong>");
-  var why={match:"Sheet ke Total se match karke pata chala.",word:"Sheet mein likha hai.",col:"Sheet ke GST column se.",extra:"Total mein extra / design charge hai, GST nahi maana.",calc:"Total khali tha, Rate × Qty se banaya.",nomatch:"Total, Rate × Qty se match nahi hua — sheet check karo. Abhi GST nahi maana."}[o.why]||"";
+  var why={match:"Detected by matching the sheet Total.",word:"Stated in the sheet.",col:"From the sheet's GST column.",extra:"Total includes an extra / design charge; GST not assumed.",calc:"Total was blank; calculated from Rate × Qty.",nomatch:"Total does not match Rate × Qty — check the sheet. GST not assumed for now."}[o.why]||"";
   var it=o.items.length>1?o.items.map(function(x){return esc(x.name)+(x.qty!=null?" × "+x.qty:"")+(x.amt!=null?" = "+inr(x.amt):"")}).join("<br>"):"";
   return '<div class="dgrid">'+
     '<div><b>Client</b>'+(esc(o.name)||"-")+(o.company?" • "+esc(o.company):"")+'</div>'+
     '<div><b>Number</b>'+(mask(o.num)||"-")+'</div>'+
     '<div><b>Lead source</b>'+(esc(o.source)||"-")+'</div>'+
     '<div><b>Payment</b>'+(esc(o.payment)||"-")+(o.pendingText?" • Pending: "+esc(o.pendingText):"")+'</div>'+
-    '<div><b>Delivery / Porter</b>'+(esc(o.deliveryText)||"-")+(o.dv.kind==="client"?' <span class="mu">(client ne diya — count nahi)</span>':'')+'</div>'+
-    (hasCost?'<div><b>Purchase / Porter (humne diya)</b>'+(o.purchase!=null?inr(o.purchase):"khali")+" • "+inr(o.ourShip)+(o.profit!=null?" • Profit "+inr(o.profit):"")+(o.costNote?'<br><span class="mu">'+esc(o.costNote)+'</span>':'')+'</div>':'')+
+    '<div><b>Delivery / Porter</b>'+(o.dv.kind==="client"?'Porter — paid by the client directly':(esc(o.deliveryText)||"-"))+'</div>'+
+    (hasCost?'<div><b>Purchase / Profit</b>'+(o.purchase!=null?inr(o.purchase):"blank")+(o.profit!=null?" • Profit "+inr(o.profit):"")+(o.costNote?'<br><span class="mu">'+esc(o.costNote)+'</span>':'')+'</div>':'')+
     (o.dispatchOn||o.deliveredOn||o.payDate?'<div><b>Dates</b>'+(o.dispatchOn?"Dispatch "+niceDate(o.dispatchOn)+" ":"")+(o.deliveredOn?"• Delivery "+niceDate(o.deliveredOn)+" ":"")+(o.payDate?"• Payment "+niceDate(o.payDate):"")+'</div>':'')+
     '<div><b>Sheet row</b>'+o.row+'</div>'+
     '<div class="full"><b>Address</b>'+(esc(o.address)||"-")+'</div>'+
     (it?'<div class="full"><b>Items</b>'+it+'</div>':'')+
-    '<div class="full calc"><b>Hisaab</b>'+c.join(" &nbsp;•&nbsp; ")+'<br><span class="mu">'+why+(o.flags.length?" "+esc(o.flags.join(". ")):"")+'</span></div>'+
+    '<div class="full calc"><b>Breakdown</b>'+c.join(" &nbsp;•&nbsp; ")+'<br><span class="mu">'+why+(o.flags.length?" "+esc(o.flags.join(". ")):"")+'</span></div>'+
     '</div>';
 }
 function toggleOrder(tr){
@@ -1055,7 +1176,7 @@ function toggleOrder(tr){
   tr.parentNode.insertBefore(d,tr.nextSibling);
 }
 
-/* ======================= SHEHAR / STATE (address se) ======================= */
+/* ======================= CITY / STATE (from address) ======================= */
 var ST_NAMES=[["Uttarakhand",/uttarakhand|uttrakhand/],["Uttar Pradesh",/uttar\s*pradesh|\bu\.p\.?\b/],["Haryana",/haryana/],["Maharashtra",/maharashtra/],
   ["Karnataka",/karnataka/],["Tamil Nadu",/tamil\s*nadu/],["Telangana",/telangana/],["Andhra Pradesh",/andhra/],["Kerala",/kerala/],["Gujarat",/gujarat/],
   ["Rajasthan",/rajasthan|\(raj\.?\)/],["Madhya Pradesh",/madhya\s*pradesh/],["West Bengal",/west\s*bengal/],["Punjab",/punjab/],["Bihar",/bihar/],
@@ -1090,14 +1211,14 @@ function geoOf(a){
   return {state:st,city:city};
 }
 
-/* ======================= PURCHASE sheet (product ka purchase rate) ======================= */
+/* ======================= PURCHASE sheet (purchase rate per product) ======================= */
 var PMAP={},PLIST=[];
 var PUR_RULES=[["skip",/updated|modified/],["sale",/sale|selling|mrp|hamara|our rate|customer rate/],["cost",/purchase|cost|kharid|buy|vendor|rate|price/],["product",/product|item|name|naam/]];
 function purchaseFromRows(rows){
   rows=nonBlank(rows);
   var m={};if(!rows.length)return m;
   var ix=classify(rows[0],PUR_RULES);
-  if(ix.product===undefined||ix.cost===undefined)throw new Error("Purchase sheet mein 'Product' aur 'Purchase Rate' column chahiye");
+  if(ix.product===undefined||ix.cost===undefined)throw new Error("The Purchase sheet needs 'Product' and 'Purchase Rate' columns");
   rows.slice(1).forEach(function(r){
     var n=clean(r[ix.product]),k=prodKey(n),c=lineNum(r[ix.cost]);
     if(!k||c==null)return;
@@ -1121,7 +1242,7 @@ function applyCosts(){
     if(PLIST.length&&o.items.length){
       var sum=0,miss=[];
       o.items.forEach(function(it){var c=costOf(it.name);if(c&&it.qty!=null)sum+=c.cost*it.qty;else miss.push(it.name)});
-      if(!miss.length)o.purchase=sum;else o.costNote="Purchase rate nahi mila: "+miss.join(", ");
+      if(!miss.length)o.purchase=sum;else o.costNote="Purchase rate not found: "+miss.join(", ");
     }
     calcProfit(o);
   });
@@ -1136,18 +1257,18 @@ function byRange(list,f,t){
 }
 function median(a){if(!a.length)return null;a=a.slice().sort(function(x,y){return x-y});var m=a.length>>1;return a.length%2?a[m]:(a[m-1]+a[m])/2}
 function avg(a){return a.length?a.reduce(function(x,y){return x+y},0)/a.length:null}
-function dinTxt(n){return n==null?"-":(Math.round(n*10)/10)+" din"}
-function ageBadge(n){var c=n>7?"not":n>3?"fu":"conv";return '<span class="st '+c+'">'+n+' din</span>'}
+function dinTxt(n){return n==null?"-":(Math.round(n*10)/10)+" days"}
+function ageBadge(n){var c=n>7?"not":n>3?"fu":"conv";return '<span class="st '+c+'">'+n+' days</span>'}
 function clientKey(o){return o.k||("n:"+(o.name+"|"+o.company).toLowerCase())}
 function clientLabel(c){return '<b>'+(esc(c.name)||"-")+'</b>'+(c.company?'<br><span class="mu">'+esc(c.company)+'</span>':'')+(c.num?'<br><span class="mu">'+mask(c.num)+'</span>':'')}
 function chg(cur,prev){
   if(!prev&&!cur)return '<span class="chg eq">–</span>';
-  if(!prev)return '<span class="chg up">naya</span>';
+  if(!prev)return '<span class="chg up">new</span>';
   var p=(cur-prev)/prev*100;
   return '<span class="chg '+(p>0.5?"up":p<-0.5?"dn":"eq")+'">'+(p>0.5?"▲ ":p<-0.5?"▼ ":"")+Math.abs(p).toFixed(0)+'%</span>';
 }
 
-/* ======================= Is mahina vs pichhla mahina ======================= */
+/* ======================= This month vs last month ======================= */
 function renderCompare(){
   var today=parts(new Date()).day,y=+today.slice(0,4),m=+today.slice(5,7),d=+today.slice(8,10);
   var py=m===1?y-1:y,pmo=m===1?12:m-1,dim=new Date(Date.UTC(py,pmo,0)).getUTCDate();
@@ -1158,12 +1279,14 @@ function renderCompare(){
       profit:l.reduce(function(a,o){return a+(o.profit||0)},0)}}
   var c=S(tf,today),p=S(pf,pt),pF=S(pf,pfull);
   $("sa-cmp-sub").textContent="(1–"+d+" "+MNAME[m-1]+" vs 1–"+Math.min(d,dim)+" "+MNAME[pmo-1]+")";
-  function cell(l,cv,pv,fv,money){
+  function inR(a,b){return function(o){return o.day&&o.day>=a&&o.day<=b}}
+  function cell(l,cv,pv,fv,money,lead){
     var f=money?inr:function(x){return x};
-    return '<div><div class="l">'+l+'</div><div class="v">'+f(cv)+chg(cv,pv)+'</div><div class="s">Pichhla: '+f(pv)+' • Poora '+MNAME[pmo-1]+': '+f(fv)+'</div></div>';
+    var pop=lead?function(){return {t:"Leads this month",s:"1–"+d+" "+MNAME[m-1],type:"leads",list:leads.filter(function(x){return x.day>=tf&&x.day<=today})}}:OP("Orders this month",orders,inR(tf,today),money&&l!=="Average order"?"net":null);
+    return '<div class="clk" data-pop="'+P(pop)+'"><div class="l">'+l+'</div><div class="v">'+f(cv)+chg(cv,pv)+'</div><div class="s">Previous: '+f(pv)+' • Full '+MNAME[pmo-1]+': '+f(fv)+'</div></div>';
   }
-  $("sa-cmp").innerHTML=cell("Asli sale",c.net,p.net,pF.net,true)+cell("Orders",c.n,p.n,pF.n)+
-    cell("Leads",c.leads,p.leads,pF.leads)+cell("Average order",c.n?c.net/c.n:0,p.n?p.net/p.n:0,pF.n?pF.net/pF.n:0,true)+
+  $("sa-cmp").innerHTML=cell("Net sales",c.net,p.net,pF.net,true)+cell("Orders",c.n,p.n,pF.n)+
+    cell("Leads",c.leads,p.leads,pF.leads,false,true)+cell("Average order",c.n?c.net/c.n:0,p.n?p.net/p.n:0,pF.n?pF.net/pF.n:0,true)+
     (hasCost?cell("Profit",c.profit,p.profit,pF.profit,true):"");
 }
 
@@ -1182,7 +1305,7 @@ function buildClients(list){
 }
 function renderClients(){
   if(!orders.length){["cl-kpis","cl-rows","cl-l2o","cl-state","cl-city","cl-src"].forEach(function(id){$(id).innerHTML=""});
-    $("cl-rows").innerHTML='<tr><td colspan="8" class="mu" style="padding:16px">Order sheet ka data nahi hai.</td></tr>';return}
+    $("cl-rows").innerHTML='<tr><td colspan="8" class="mu" style="padding:16px">No Order sheet data.</td></tr>';return}
   var f=$("cl-from").value,t=$("cl-to").value,list=byRange(orders,f,t),cl=buildClients(list);
   var tot=cl.length,rep=cl.filter(function(c){return c.n>1}),net=0,repNet=0;
   cl.forEach(function(c){net+=c.net;if(c.n>1)repNet+=c.net});
@@ -1193,16 +1316,17 @@ function renderClients(){
     var dd=dDiff(LMAP[c.k].day,c.first);
     if(dd<0){before++;return}
     l2o.push(dd);c.l2o=dd;
-    var s=c.source||"(khali)";(bySrc[s]=bySrc[s]||[]).push(dd);
+    var s=c.source||"(blank)";(bySrc[s]=bySrc[s]||[]).push(dd);
   });
-  var st=groupList(cl,function(c){return c.state||"Pata nahi"},function(c){return c.net});
+  var st=groupList(cl,function(c){return c.state||"Unknown"},function(c){return c.net});
   $("cl-kpis").innerHTML=
-    kpi(tot,"Total clients",list.length+" orders")+
-    kpi(rep.length,"Repeat clients",tot?(rep.length/tot*100).toFixed(0)+"% clients ne dobara order diya":"-","good")+
-    kpi(net?(repNet/net*100).toFixed(0)+"%":"-","Repeat clients ki sale",inr(repNet)+" asli sale")+
-    kpi(tot?(list.length/tot).toFixed(2):"-","Orders / client","average")+
-    kpi(l2o.length?dinTxt(median(l2o)):"-","Lead → order (median)",l2o.length?l2o.length+" clients • avg "+dinTxt(avg(l2o)):"Leads sheet jodo")+
-    kpi(st.length&&st[0].k!=="Pata nahi"?esc(st[0].k):(st[1]?esc(st[1].k):"-"),"Sabse zyada orders","state");
+    kpi(tot,"Total clients",list.length+" orders","",CP("All clients",cl))+
+    kpi(rep.length,"Repeat clients",tot?(rep.length/tot*100).toFixed(0)+"% of clients ordered again":"-","good",CP("Repeat clients",rep))+
+    kpi(net?(repNet/net*100).toFixed(0)+"%":"-","Repeat clients' sales",inr(repNet)+" net sales","",CP("Repeat clients",rep))+
+    kpi(tot?(list.length/tot).toFixed(2):"-","Orders / client","average","",CP("Clients by number of orders",cl.slice().sort(function(a,b){return b.n-a.n})))+
+    kpi(l2o.length?dinTxt(median(l2o)):"-","Lead → order (median)",l2o.length?l2o.length+" clients • avg "+dinTxt(avg(l2o)):"Connect the Leads sheet","",CP("Clients with a lead and an order",cl.filter(function(c){return c.l2o!=null}).sort(function(a,b){return a.l2o-b.l2o})))+
+    (function(){var top=st.length&&st[0].k!=="Unknown"?st[0].k:(st[1]?st[1].k:"");
+      return kpi(top?esc(top):"-","Most orders","state","",top?OP("Orders from "+top,list,function(o){return o.geo.state===top}):null)})();
 
   // Client table
   var q=$("cl-q").value.trim().toLowerCase(),qd=q.replace(/\D/g,""),so=$("cl-sort").value;
@@ -1211,45 +1335,45 @@ function renderClients(){
   rows.sort(so==="orders"?function(a,b){return b.n-a.n||b.net-a.net}:so==="recent"?function(a,b){return (b.last||"").localeCompare(a.last||"")}:function(a,b){return b.net-a.net});
   $("cl-title").textContent="Clients ("+rows.length+")";
   $("cl-rows").innerHTML=rows.slice(0,300).map(function(c,i){
-    return '<tr><td>'+(i+1)+'</td><td>'+clientLabel(c)+(c.k?sheetTags(c.k):"")+'</td>'+
+    return '<tr class="clk" data-pop="'+P(CO(c))+'"><td>'+(i+1)+'</td><td>'+clientLabel(c)+(c.k?sheetTags(c.k):"")+'</td>'+
       '<td>'+c.n+(c.n>1?' <span class="st conv">Repeat</span>':'')+'</td><td class="r"><b>'+inr(c.net)+'</b></td>'+
       '<td class="nw">'+(c.first?niceDate(c.first):"-")+'</td><td class="nw">'+(c.last?niceDate(c.last):"-")+'</td>'+
       '<td>'+(esc(c.source)||"-")+'</td><td>'+(esc(c.city)||"-")+(c.state?'<br><span class="mu">'+esc(c.state)+'</span>':'')+'</td></tr>';
-  }).join("")||'<tr><td colspan="8" class="mu" style="padding:16px">Koi client nahi mila.</td></tr>';
+  }).join("")||'<tr><td colspan="8" class="mu" style="padding:16px">No clients found.</td></tr>';
 
   // Lead -> order buckets
-  var B=[["Usi din",0,0],["1–3 din",1,3],["4–7 din",4,7],["8–15 din",8,15],["16–30 din",16,30],["30+ din",31,1e9]];
+  var B=[["Same day",0,0],["1–3 days",1,3],["4–7 days",4,7],["8–15 days",8,15],["16–30 days",16,30],["30+ days",31,1e9]];
   var bc=B.map(function(b){return l2o.filter(function(x){return x>=b[1]&&x<=b[2]}).length}),bmx=Math.max.apply(null,bc.concat(1));
-  $("cl-l2o").innerHTML=l2o.length?B.map(function(b,i){return hb(b[0],bc[i]+' <span class="mu">('+Math.round(bc[i]/l2o.length*100)+'%)</span>',bc[i]/bmx*100,i<2?"conv":i<4?"disp":"fu")}).join("")+
-    '<div class="note">'+l2o.length+' clients ki lead aur order dono mile. Median '+dinTxt(median(l2o))+', average '+dinTxt(avg(l2o))+'.'+(before?' '+before+' clients ka order lead se pehle ka hai (purane client).':'')+'</div>'
-    :'<div class="hint">Leads sheet ke numbers aur Order sheet ke numbers match hone par ye dikhega.</div>';
+  $("cl-l2o").innerHTML=l2o.length?B.map(function(b,i){return hb(b[0],bc[i]+' <span class="mu">('+Math.round(bc[i]/l2o.length*100)+'%)</span>',bc[i]/bmx*100,i<2?"conv":i<4?"disp":"fu",CP("Lead to order: "+b[0],cl.filter(function(c){return c.l2o!=null&&c.l2o>=b[1]&&c.l2o<=b[2]})))}).join("")+
+    '<div class="note">'+l2o.length+' clients have both a lead and an order. Median '+dinTxt(median(l2o))+', average '+dinTxt(avg(l2o))+'.'+(before?' '+before+' clients ordered before their lead came in (existing clients).':'')+'</div>'
+    :'<div class="hint">This appears when numbers in the Leads sheet match numbers in the Order sheet.</div>';
 
   // State / city
   var smx=st.length?st[0].n:1;
-  $("cl-state").innerHTML=st.slice(0,10).map(function(x){return hb(x.k,x.n+' <span class="mu">· '+inrK(x.v)+'</span>',x.n/smx*100,x.k==="Pata nahi"?"pen":"")}).join("");
+  $("cl-state").innerHTML=st.slice(0,10).map(function(x){return hb(x.k,x.n+' <span class="mu">· '+inrK(x.v)+'</span>',x.n/smx*100,x.k==="Unknown"?"pen":"",CP("Clients in "+x.k,cl.filter(function(c){return (c.state||"Unknown")===x.k})))}).join("");
   var ct=groupList(cl.filter(function(c){return c.city}),function(c){return c.city},function(c){return c.net}),cmx=ct.length?ct[0].n:1;
-  $("cl-city").innerHTML=ct.slice(0,10).map(function(x){return hb(x.k,x.n+' <span class="mu">· '+inrK(x.v)+'</span>',x.n/cmx*100,"disp")}).join("")||'<div class="mu">Address se shehar nahi mila.</div>';
+  $("cl-city").innerHTML=ct.slice(0,10).map(function(x){return hb(x.k,x.n+' <span class="mu">· '+inrK(x.v)+'</span>',x.n/cmx*100,"disp",CP("Clients in "+x.k,cl.filter(function(c){return c.city===x.k})))}).join("")||'<div class="mu">No cities found in addresses.</div>';
 
   // Source report
   var hasLeadSrc=leads.some(function(l){return l.src});
   var lf=f,lt=t;if(lf&&lt&&lt<lf){var x=lf;lf=lt;lt=x}
   var lv=leads.filter(function(l){return (!lf||l.day>=lf)&&(!lt||l.day<=lt)});
   var lsc={};lv.forEach(function(l){var k=(l.src||"").toLowerCase();lsc[k]=(lsc[k]||0)+1});
-  var sg=groupList(list,function(o){return o.source||"(khali)"},function(o){return o.net});
+  var sg=groupList(list,function(o){return o.source||"(blank)"},function(o){return o.net});
   $("cl-src").innerHTML=sg.map(function(x){
-    var ord=list.filter(function(o){return (o.source||"(khali)")===x.k}),cs={};ord.forEach(function(o){cs[clientKey(o)]=1});
+    var ord=list.filter(function(o){return (o.source||"(blank)")===x.k}),cs={};ord.forEach(function(o){cs[clientKey(o)]=1});
     var nc=Object.keys(cs).length,ln=hasLeadSrc?(lsc[x.k.toLowerCase()]||0):null,md=bySrc[x.k]?median(bySrc[x.k]):null;
-    return '<tr><td><b>'+esc(x.k)+'</b></td><td class="r">'+(ln==null?"-":ln)+'</td><td class="r">'+x.n+'</td><td class="r">'+nc+'</td>'+
+    return '<tr class="clk" data-pop="'+P(OP("Source: "+x.k,ord))+'"><td><b>'+esc(x.k)+'</b></td><td class="r">'+(ln==null?"-":ln)+'</td><td class="r">'+x.n+'</td><td class="r">'+nc+'</td>'+
       '<td class="r">'+(ln?(nc/ln*100).toFixed(1)+"%":"-")+'</td><td class="r"><b>'+inr(x.v)+'</b></td><td class="r">'+inr(x.v/x.n)+'</td>'+
       '<td class="r">'+(net?(x.v/net*100).toFixed(0)+"%":"-")+'</td><td class="r">'+dinTxt(md)+'</td></tr>';
   }).join("");
-  $("cl-src-note").textContent=hasLeadSrc?"Leads = Leads sheet ke Source column se (naam same hona chahiye, jaise \"Instagram\"). Conversion = clients / leads.":
-    "Leads sheet mein 'Source' column nahi hai, isliye har source ki leads aur conversion nahi dikh rahe. Leads sheet mein Source column (Instagram / Website / …) add karoge to ye bhi dikhega.";
+  $("cl-src-note").textContent=hasLeadSrc?"Leads = from the Leads sheet's Source column (names must match, e.g. \"Instagram\"). Conversion = clients / leads.":
+    "The Leads sheet has no 'Source' column, so leads and conversion per source are not shown. Add a Source column (Instagram / Website / …) to the Leads sheet to see them.";
 }
 
 /* ======================= PRODUCTS TAB (5) ======================= */
 function renderProducts(){
-  if(!orders.length){$("pr-kpis").innerHTML="";$("pr-head").innerHTML="";$("pr-rows").innerHTML='<tr><td class="mu" style="padding:16px">Order sheet ka data nahi hai.</td></tr>';return}
+  if(!orders.length){$("pr-kpis").innerHTML="";$("pr-head").innerHTML="";$("pr-rows").innerHTML='<tr><td class="mu" style="padding:16px">No Order sheet data.</td></tr>';return}
   var list=byRange(orders,$("pr-from").value,$("pr-to").value),pm={};
   list.forEach(function(o){
     var single=o.items.length===1;
@@ -1277,44 +1401,44 @@ function renderProducts(){
   var tv=pl.reduce(function(a,p){return a+p.v},0),showC=PLIST.length>0;
   var byV=pl.slice().sort(function(a,b){return b.v-a.v})[0],byN=pl.slice().sort(function(a,b){return b.n-a.n})[0];
   var mts=pl.filter(function(p){return p.mt!=null}),mtot=mts.reduce(function(a,p){return a+p.mt},0);
-  $("pr-kpis").innerHTML=kpi(pl.length,"Products","alag-alag")+
-    (byV?kpi(inrK(byV.v),"Sabse zyada sale",esc(byV.name),"good"):"")+
-    (byN?kpi(byN.n,"Sabse zyada orders",esc(byN.name)):"")+
-    (showC?kpi(inr(mtot),"Product margin (andaza)",mts.length+" products ka purchase rate mila",mtot>=0?"good":"warn"):"");
-  $("pr-head").innerHTML='<tr><th>Product</th><th class="r">Orders</th><th class="r">Clients</th><th class="r">Quantity</th><th class="r">Avg rate</th><th class="r">Sale</th><th class="r">Share</th><th>Best mahina</th><th>Aakhri order</th>'+
-    (showC?'<th class="r">Purchase rate</th><th class="r">Margin / pc</th><th class="r">Margin %</th><th class="r">Kul margin</th>':'')+'</tr>';
+  $("pr-kpis").innerHTML=kpi(pl.length,"Products","unique","",OP("All orders",list))+
+    (byV?kpi(inrK(byV.v),"Top seller",esc(byV.name),"good",OP(byV.name,list,hasProd(byV.name),"net")):"")+
+    (byN?kpi(byN.n,"Most orders",esc(byN.name),"",OP(byN.name,list,hasProd(byN.name))):"")+
+    (showC?kpi(inr(mtot),"Product margin (estimate)",mts.length+" products have a purchase rate",mtot>=0?"good":"warn",OP("Orders with purchase cost",list,function(o){return o.profit!=null},"profit")):"");
+  $("pr-head").innerHTML='<tr><th>Product</th><th class="r">Orders</th><th class="r">Clients</th><th class="r">Quantity</th><th class="r">Avg rate</th><th class="r">Sale</th><th class="r">Share</th><th>Best month</th><th>Last order</th>'+
+    (showC?'<th class="r">Purchase rate</th><th class="r">Margin / pc</th><th class="r">Margin %</th><th class="r">Total margin</th>':'')+'</tr>';
   $("pr-title").textContent="Products ("+pl.length+")";
   $("pr-rows").innerHTML=pl.map(function(p){
-    return '<tr><td><b>'+esc(p.name)+'</b></td><td class="r">'+p.n+'</td><td class="r">'+p.nc+'</td><td class="r">'+(p.q?Math.round(p.q).toLocaleString("en-IN"):"-")+'</td>'+
+    return '<tr class="clk" data-pop="'+P(OP(p.name,list,hasProd(p.name)))+'"><td><b>'+esc(p.name)+'</b></td><td class="r">'+p.n+'</td><td class="r">'+p.nc+'</td><td class="r">'+(p.q?Math.round(p.q).toLocaleString("en-IN"):"-")+'</td>'+
       '<td class="r">'+(p.rate!=null?"₹"+(+p.rate.toFixed(2)).toLocaleString("en-IN"):"-")+'</td><td class="r"><b>'+inr(p.v)+'</b></td>'+
       '<td class="r">'+(tv?(p.v/tv*100).toFixed(1)+"%":"-")+'</td><td>'+p.best+'</td><td class="nw">'+(p.last?niceDate(p.last):"-")+'</td>'+
-      (showC?'<td class="r">'+(p.cost?"₹"+p.cost.cost.toLocaleString("en-IN"):'<span class="mu">nahi mila</span>')+'</td>'+
+      (showC?'<td class="r">'+(p.cost?"₹"+p.cost.cost.toLocaleString("en-IN"):'<span class="mu">not found</span>')+'</td>'+
         '<td class="r">'+(p.mu!=null?"₹"+(+p.mu.toFixed(2)).toLocaleString("en-IN"):"-")+'</td>'+
         '<td class="r">'+(p.mp!=null?p.mp.toFixed(0)+"%":"-")+'</td><td class="r">'+(p.mt!=null?inr(p.mt):"-")+'</td>':'')+'</tr>';
-  }).join("")||'<tr><td colspan="9" class="mu" style="padding:16px">Koi product nahi mila.</td></tr>';
-  $("pr-note").textContent="Ek jaise naam (jaise \"Lollipop Sign Board 18*18\" aur \"Lollipop Signboard (18\" × 18\")\") ek hi product gine jaate hain. Sale = bina GST / delivery. "+
-    (showC?"Margin = avg rate − purchase rate (Purchase sheet se).":"Purchase sheet (PURCHASE_CSV_URL) jodoge to har product ka margin bhi dikhega.");
+  }).join("")||'<tr><td colspan="9" class="mu" style="padding:16px">No products found.</td></tr>';
+  $("pr-note").textContent="Similar names (e.g. \"Lollipop Sign Board 18*18\" and \"Lollipop Signboard (18\" × 18\")\") are counted as one product. Sale = excl. GST / delivery. "+
+    (showC?"Margin = avg rate − purchase rate (from the Purchase sheet).":"Connect the Purchase sheet (PURCHASE_CSV_URL) to see each product's margin.");
 }
 
-/* ======================= KAAM TAB (7, 8, 10, 11) ======================= */
+/* ======================= WORK TAB (7, 8, 10, 11) ======================= */
 function orderIssues(){
   var seen={},out=[];
   orders.forEach(function(o){
     var is=[];
-    if(!o.rawDate)is.push("Date khali");else if(!o.day)is.push("Date samajh nahi aayi ("+o.rawDate+")");
-    if(!o.num)is.push("Number khali");else if(o.num.length<10)is.push("Number adhoora ("+o.num+")");
-    if(!o.products.length)is.push("Product khali");
-    if(o.T==null)is.push("Total Amount khali");
+    if(!o.rawDate)is.push("Date blank");else if(!o.day)is.push("Date not understood ("+o.rawDate+")");
+    if(!o.num)is.push("Number blank");else if(o.num.length<10)is.push("Number incomplete ("+o.num+")");
+    if(!o.products.length)is.push("Product blank");
+    if(o.T==null)is.push("Total Amount blank");
     if(o.mode==="check"&&o.base!=null&&o.T!=null)is.push("Total "+inr(o.T)+" ≠ Rate × Qty "+inr(o.base)+(o.dv.d?" + delivery "+inr(o.dv.d):""));
-    if(o.base==null&&o.products.length)is.push("Rate / Quantity samajh nahi aaya");
-    if(o.status==="—")is.push("Status khali");
-    if(!o.address&&o.dv.kind!=="pickup")is.push("Address khali");
-    if(!o.payment&&!o.pendingText)is.push("Payment khali");
-    if(!o.source)is.push("Lead source khali");
-    if(o.day&&o.dispatchOn&&o.dispatchOn<o.day)is.push("Dispatch date order se pehle");
-    if(o.day&&o.deliveredOn&&o.deliveredOn<o.day)is.push("Delivery date order se pehle");
+    if(o.base==null&&o.products.length)is.push("Rate / Quantity not understood");
+    if(o.status==="—")is.push("Status blank");
+    if(!o.address&&o.dv.kind!=="pickup")is.push("Address blank");
+    if(!o.payment&&!o.pendingText)is.push("Payment blank");
+    if(!o.source)is.push("Lead source blank");
+    if(o.day&&o.dispatchOn&&o.dispatchOn<o.day)is.push("Dispatch date before order date");
+    if(o.day&&o.deliveredOn&&o.deliveredOn<o.day)is.push("Delivery date before order date");
     var dk=[o.k||o.name,o.day,Math.round(o.Tcalc),o.products.join("|")].join("~");
-    if(seen[dk])is.push("Duplicate lag raha hai (row "+seen[dk]+" jaisa)");else seen[dk]=o.row;
+    if(seen[dk])is.push("Looks like a duplicate (same as row "+seen[dk]+")");else seen[dk]=o.row;
     if(is.length)out.push({o:o,is:is});
   });
   return out;
@@ -1322,42 +1446,43 @@ function orderIssues(){
 function renderKaam(){
   var today=parts(new Date()).day;
   if(!orders.length){["km-kpis","km-open","km-pay","km-pay-k","km-del","km-err","km-err-sum"].forEach(function(id){$(id).innerHTML=""});return}
-  // 7: kaam baaki
+  // 7: pending work
   var open=orders.filter(function(o){var c=stCls(o.status);return c!=="conv"&&c!=="not"}).map(function(o){
     var ref=stCls(o.status)==="disp"&&o.dispatchOn?o.dispatchOn:o.day;
     return {o:o,age:ref?dDiff(ref,today):null};
   }).sort(function(a,b){return (b.age==null?-1:b.age)-(a.age==null?-1:a.age)});
   var stc={};open.forEach(function(x){stc[x.o.status]=(stc[x.o.status]||0)+1});
   var old7=open.filter(function(x){return x.age!=null&&x.age>7}).length;
-  // 11: paisa baaki
+  // 11: payment due
   var pend=orders.filter(function(o){return o.pending>0}).map(function(o){
     var ref=o.deliveredOn||o.day;return {o:o,age:ref?dDiff(ref,today):null};
   }).sort(function(a,b){return (b.age||0)-(a.age||0)});
   var pendT=pend.reduce(function(a,x){return a+x.o.pending},0);
-  $("km-kpis").innerHTML=kpi(open.length,"Kaam baaki","Delivered nahi hue")+
-    Object.keys(stc).sort(function(a,b){return stc[b]-stc[a]}).map(function(k){return kpi(stc[k],esc(k),"abhi")}).join("")+
-    kpi(old7,"7 din se purane","jaldi dekho",old7?"warn":"good")+
-    kpi(inr(pendT),"Paisa baaki",pend.length+" orders",pendT?"warn":"good");
-  $("km-open-t").textContent="Kaam baaki ("+open.length+") — purane pehle";
+  var openL=open.map(function(x){return x.o});
+  $("km-kpis").innerHTML=kpi(open.length,"Pending work","Not delivered yet","",OP("Pending work",openL,null,"old"))+
+    Object.keys(stc).sort(function(a,b){return stc[b]-stc[a]}).map(function(k){return kpi(stc[k],esc(k),"right now","",OP("Status: "+k,openL,function(o){return o.status===k},"old"))}).join("")+
+    kpi(old7,"Older than 7 days","needs attention",old7?"warn":"good",OP("Older than 7 days",open.filter(function(x){return x.age!=null&&x.age>7}).map(function(x){return x.o}),null,"old"))+
+    kpi(inr(pendT),"Payment due",pend.length+" orders",pendT?"warn":"good",OP("Payment due",pend.map(function(x){return x.o}),null,"pending"));
+  $("km-open-t").textContent="Pending work ("+open.length+") — oldest first";
   $("km-open").innerHTML=open.map(function(x){var o=x.o;
-    return '<tr><td>'+(x.age==null?'<span class="mu">Date nahi</span>':ageBadge(x.age))+'</td><td class="nw">'+(o.day?niceDate(o.day):"-")+(o.dispatchOn?'<br><span class="mu">Dispatch '+niceDate(o.dispatchOn)+'</span>':'')+'</td>'+
+    return '<tr><td>'+(x.age==null?'<span class="mu">No date</span>':ageBadge(x.age))+'</td><td class="nw">'+(o.day?niceDate(o.day):"-")+(o.dispatchOn?'<br><span class="mu">Dispatch '+niceDate(o.dispatchOn)+'</span>':'')+'</td>'+
       '<td><b>'+(esc(o.name)||"-")+'</b>'+(o.company?'<br><span class="mu">'+esc(o.company)+'</span>':'')+'<br><span class="mu">'+(mask(o.num)||"-")+'</span></td>'+
       '<td class="prod">'+(esc(o.products.join("\n"))||"-")+'</td><td><span class="st '+stCls(o.status)+'">'+esc(o.status)+'</span></td>'+
       '<td>'+esc(o.dv.label)+'</td><td class="r">'+(o.pending>0?inr(o.pending):"-")+'</td></tr>';
-  }).join("")||'<tr><td colspan="7" class="mu" style="padding:16px">Sab orders deliver ho chuke hain. 🎉</td></tr>';
+  }).join("")||'<tr><td colspan="7" class="mu" style="padding:16px">All orders have been delivered. 🎉</td></tr>';
 
   // 11: payment
   var pdl=orders.filter(function(o){return o.payDate&&o.day}).map(function(o){return dDiff(o.day,o.payDate)}).filter(function(x){return x>=0});
-  $("km-pay-t").textContent="Paisa baaki ("+pend.length+" orders • "+inr(pendT)+")";
+  $("km-pay-t").textContent="Payment due ("+pend.length+" orders • "+inr(pendT)+")";
   $("km-pay-k").innerHTML=OCOL.payDate!==undefined?
-    '<div class="kpis">'+kpi(dinTxt(avg(pdl)),"Payment aane mein (avg)",pdl.length+" orders, order date se")+kpi(dinTxt(median(pdl)),"Payment (median)","aadhe orders isse jaldi")+'</div>':
-    '<div class="hint mb">Order sheet mein <b>Payment Date</b> column add karo (jis din paisa aaya). Phir dikhega ki payment aane mein kitne din lagte hain.</div>';
+    '<div class="kpis">'+kpi(dinTxt(avg(pdl)),"Days to payment (avg)",pdl.length+" orders, from order date")+kpi(dinTxt(median(pdl)),"Payment (median)","half of orders are faster")+'</div>':
+    '<div class="hint mb">Add a <b>Payment Date</b> column to the Order sheet (the day payment was received) to see how many days payments take.</div>';
   $("km-pay").innerHTML=pend.map(function(x){var o=x.o;
     return '<tr><td><b>'+(esc(o.name)||"-")+'</b>'+(o.company?'<br><span class="mu">'+esc(o.company)+'</span>':'')+'<br><span class="mu">'+(mask(o.num)||"-")+'</span></td>'+
       '<td class="r"><b>'+inr(o.pending)+'</b></td><td class="r">'+inr(o.Tcalc)+'</td><td class="nw">'+(o.day?niceDate(o.day):"-")+'</td>'+
-      '<td>'+(x.age==null?"-":ageBadge(x.age))+(o.deliveredOn?'<br><span class="mu">delivery se</span>':'')+'</td>'+
+      '<td>'+(x.age==null?"-":ageBadge(x.age))+(o.deliveredOn?'<br><span class="mu">since delivery</span>':'')+'</td>'+
       '<td><span class="st '+stCls(o.status)+'">'+esc(o.status)+'</span></td><td>'+(esc(o.payment)||"-")+(o.payDate?'<br><span class="mu">'+niceDate(o.payDate)+'</span>':'')+'</td></tr>';
-  }).join("")||'<tr><td colspan="7" class="mu" style="padding:16px">Kisi order mein paisa baaki nahi hai.</td></tr>';
+  }).join("")||'<tr><td colspan="7" class="mu" style="padding:16px">No payments are due.</td></tr>';
 
   // 10: delivery time
   var hasD=OCOL.dispatchOn!==undefined,hasV=OCOL.deliveredOn!==undefined;
@@ -1373,22 +1498,22 @@ function renderKaam(){
       (hasD?kpi(dinTxt(avg(o2d)),"Order → Dispatch (avg)",o2d.length+" orders • median "+dinTxt(median(o2d))):"")+
       (hasD&&hasV?kpi(dinTxt(avg(d2v)),"Dispatch → Delivery (avg)",d2v.length+" orders • median "+dinTxt(median(d2v))):"")+
       (hasV?kpi(dinTxt(avg(o2v)),"Order → Delivery (avg)",o2v.length+" orders • median "+dinTxt(median(o2v))):"")+'</div>'+
-      (slow.length?'<h2>Sabse zyada time lene wale</h2>'+slow.slice(0,5).map(function(x){return hb((x.o.name||"-")+" • "+(x.o.products[0]||""),x.d+" din",x.d/slow[0].d*100,x.d>7?"not":"fu")}).join(""):"")+
-      (!hasD||!hasV?'<div class="hint">'+(!hasD?'<b>Dispatch Date</b>':'<b>Delivery Date</b>')+' column bhi add karoge to poora hisaab dikhega.</div>':'');
+      (slow.length?'<h2>Slowest orders</h2>'+slow.slice(0,5).map(function(x){return hb((x.o.name||"-")+" • "+(x.o.products[0]||""),x.d+" days",x.d/slow[0].d*100,x.d>7?"not":"fu")}).join(""):"")+
+      (!hasD||!hasV?'<div class="hint">Add the '+(!hasD?'<b>Dispatch Date</b>':'<b>Delivery Date</b>')+' column too to see the full breakdown.</div>':'');
   }else{
-    $("km-del").innerHTML='<div class="hint">Order sheet mein do column add karo: <b>Dispatch Date</b> (jis din bheja) aur <b>Delivery Date</b> (jis din pahuncha). Phir yahan dikhega ki order se dispatch aur delivery tak kitne din lagte hain, aur kaun se orders late hue.</div>';
+    $("km-del").innerHTML='<div class="hint">Add two columns to the Order sheet: <b>Dispatch Date</b> (the day it was sent) and <b>Delivery Date</b> (the day it arrived). This section will then show how many days orders take to dispatch and deliver, and which orders were late.</div>';
   }
 
-  // 8: galtiyan
+  // 8: sheet errors
   var iss=orderIssues(),cnt={};
   iss.forEach(function(x){x.is.forEach(function(t){var k=t.replace(/\s*\(.*$/,"").replace(/^Total ₹.*/,"Total ≠ Rate × Qty");cnt[k]=(cnt[k]||0)+1})});
-  var lnote=[];if(info.bad)lnote.push(info.bad+" lead rows mein number ya date/time samajh nahi aaya");if(info.sci)lnote.push(info.sci+" lead numbers 9.19E+11 format mein hain");
-  $("km-err-t").textContent="Sheet ki galtiyan ("+iss.length+" orders)";
+  var lnote=[];if(info.bad)lnote.push(info.bad+" lead rows have an unreadable number or date/time");if(info.sci)lnote.push(info.sci+" lead numbers are in 9.19E+11 format");
+  $("km-err-t").textContent="Sheet errors ("+iss.length+" orders)";
   $("km-err-sum").innerHTML=(Object.keys(cnt).length?'<div class="gl mb">'+Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]}).map(function(k){return '<span class="st fu">'+esc(k)+': '+cnt[k]+'</span>'}).join("")+'</div>':"")+
     (lnote.length?'<div class="hint mb">Leads sheet: '+esc(lnote.join(" • "))+'</div>':"");
   $("km-err").innerHTML=iss.map(function(x){var o=x.o;
-    return '<tr><td><b>'+o.row+'</b></td><td>'+(esc(o.name)||"-")+(o.day?'<br><span class="mu">'+niceDate(o.day)+'</span>':'')+'</td><td><div class="gl">'+x.is.map(function(t){return '<span class="st '+(/khali|Duplicate|≠|samajh/.test(t)&&!/source|Payment|Address/.test(t)?"not":"fu")+'">'+esc(t)+'</span>'}).join("")+'</div></td></tr>';
-  }).join("")||'<tr><td colspan="3" class="mu" style="padding:16px">Koi galti nahi mili. 👍</td></tr>';
+    return '<tr><td><b>'+o.row+'</b></td><td>'+(esc(o.name)||"-")+(o.day?'<br><span class="mu">'+niceDate(o.day)+'</span>':'')+'</td><td><div class="gl">'+x.is.map(function(t){return '<span class="st '+(/blank|duplicate|≠|not understood/i.test(t)&&!/source|Payment|Address/.test(t)?"not":"fu")+'">'+esc(t)+'</span>'}).join("")+'</div></td></tr>';
+  }).join("")||'<tr><td colspan="3" class="mu" style="padding:16px">No errors found. 👍</td></tr>';
 }
 
 /* ======================= EXTRA SHEET TABS ======================= */
@@ -1399,11 +1524,11 @@ function setupExtras(){
     $("sl-tabs").appendChild(b);
     var p=document.createElement("div");p.style.display="none";
     p.innerHTML='<div class="bar card"><label>Search<input type="search" class="ex-q" placeholder="search…"></label>'+
-      '<label>Dikhao<select class="ex-f"><option value="">Sab</option><option value="m">Sirf leads se match</option><option value="u">Match nahi hue</option></select></label>'+
+      '<label>Show<select class="ex-f"><option value="">All</option><option value="m">Matched to leads only</option><option value="u">Not matched</option></select></label>'+
       '<button class="ex-c">Clear</button><button class="refresh">Refresh</button></div>'+
       '<div class="kpis"></div>'+
       '<div class="card"><h2 class="ex-t"></h2><div class="tw"><table class="stbl"><thead></thead><tbody></tbody></table></div>'+
-      '<div class="note">Number match last 10 digits se hota hai. Pehli 300 rows dikhti hain — search use karo.</div></div>';
+      '<div class="note">Numbers are matched on the last 10 digits. The first 300 rows are shown — use search.</div></div>';
     $("ex-wrap").appendChild(p);
     var x={cfg:cfg,btn:b,panel:p,data:null,err:""};
     p.querySelector(".ex-q").addEventListener("input",function(){renderExtra(x)});
@@ -1418,14 +1543,14 @@ function renderExtra(x){
   tt.textContent=x.cfg.name;
   if(!x.data){
     kp.innerHTML="";hd.innerHTML="";
-    bd.innerHTML='<tr><td class="mu" style="padding:16px">'+(!x.cfg.url?"Is sheet ka URL abhi khali hai — SL_CONFIG.EXTRA_SHEETS mein daalo.":(x.err?"Sheet load nahi hui: "+esc(x.err):"Loading…"))+'</td></tr>';
+    bd.innerHTML='<tr><td class="mu" style="padding:16px">'+(!x.cfg.url?"This sheet's URL is empty — add it in SL_CONFIG.EXTRA_SHEETS.":(x.err?"Sheet failed to load: "+esc(x.err):"Loading…"))+'</td></tr>';
     return;
   }
   var d=x.data,q=p.querySelector(".ex-q").value.trim().toLowerCase(),only=p.querySelector(".ex-f").value,matched=0;
   d.rows.forEach(function(r){if(r.k&&LMAP[r.k])matched++});
   kp.innerHTML=kpi(d.rows.length,"Total rows",esc(x.cfg.name))+
-    kpi(matched,"Leads se match","number lead sheet mein mila")+
-    kpi(d.rows.length-matched,"Match nahi hua","lead sheet mein nahi");
+    kpi(matched,"Matched to leads","number found in the Leads sheet")+
+    kpi(d.rows.length-matched,"Not matched","not in the Leads sheet");
   var rows=d.rows.filter(function(r){
     var m=r.k&&LMAP[r.k];
     if(only==="m"&&!m)return false;
@@ -1437,11 +1562,157 @@ function renderExtra(x){
   hd.innerHTML='<tr><th>Lead match</th><th>Order</th>'+d.hdr.map(function(h){return '<th>'+(esc(h)||"-")+'</th>'}).join("")+'</tr>';
   bd.innerHTML=rows.slice(0,300).map(function(r){
     var m=r.k&&LMAP[r.k];
-    return '<tr><td>'+(m?'<b>'+(esc(m.name)||"-")+'</b><br><span class="mu">Lead: '+niceDate(m.day)+'</span>':'<span class="st not">Match nahi</span>')+'</td>'+
+    return '<tr><td>'+(m?'<b>'+(esc(m.name)||"-")+'</b><br><span class="mu">Lead: '+niceDate(m.day)+'</span>':'<span class="st not">No match</span>')+'</td>'+
       '<td>'+(r.k?orderPill(r.k):"-")+'</td>'+
       r.cells.map(function(c,ci){return '<td class="cut" title="'+esc(c)+'">'+(ci===d.ni&&digits(c)?mask(digits(c)):(esc(c)||"-"))+'</td>'}).join("")+'</tr>';
-  }).join("")||'<tr><td colspan="'+(d.hdr.length+2)+'" class="mu" style="padding:16px">Kuch nahi mila.</td></tr>';
+  }).join("")||'<tr><td colspan="'+(d.hdr.length+2)+'" class="mu" style="padding:16px">Nothing found.</td></tr>';
 }
+
+/* ======================= POPUP (click any card / bar / row) ======================= */
+var popStack=[],popOpen=false;
+function sortOrders(l,by){
+  l=l.slice();
+  var f={total:function(a,b){return b.Tcalc-a.Tcalc},net:function(a,b){return b.net-a.net},pending:function(a,b){return b.pending-a.pending},
+    purchase:function(a,b){return (b.purchase||0)-(a.purchase||0)},profit:function(a,b){return (b.profit||0)-(a.profit||0)},
+    old:function(a,b){return (a.day||"9").localeCompare(b.day||"9")}}[by]||function(a,b){return (b.day||"").localeCompare(a.day||"")||b.i-a.i};
+  return l.sort(f);
+}
+function OP(title,list,fn,by){return function(){return {t:title,type:"orders",list:sortOrders(fn?list.filter(fn):list,by)}}}
+function CP(title,cl){return function(){return {t:title,type:"clients",list:cl}}}
+function CO(c){return function(){return {t:c.name||c.company||"Client",s:[c.company,c.num?mask(c.num):"",c.city].filter(Boolean).join(" • "),type:"orders",list:sortOrders(c.list)}}}
+function hasProd(name){var k=prodKey(name);return function(o){return o.items.some(function(it){return prodKey(it.name)===k})}}
+function popText(t,x){
+  if(t==="orders")return [x.name,x.company,x.num,x.products.join(" "),x.source,x.status,x.payment,x.geo&&x.geo.city].join(" ").toLowerCase();
+  if(t==="leads")return [x.name,x.num,x.src].join(" ").toLowerCase();
+  if(t==="clients")return [x.name,x.company,x.num,x.city,x.state,x.source].join(" ").toLowerCase();
+  return x.day;
+}
+function popSummary(c,l){
+  if(c.type==="orders"){var T=0,N=0,Pf=0;l.forEach(function(o){T+=o.Tcalc;N+=o.net;Pf+=o.profit||0});
+    return l.length+" orders • Total "+inr(T)+" • Net sales "+inr(N)+(hasCost?" • Profit "+inr(Pf):"")}
+  if(c.type==="leads")return l.length+" leads";
+  if(c.type==="clients"){var n=0;l.forEach(function(x){n+=x.net});return l.length+" clients • Net sales "+inr(n)}
+  if(c.type==="days"){var s=0;l.forEach(function(d){s+=d.list.length});return l.length+" days • "+s+" leads"}
+  return "";
+}
+function renderPop(dir){
+  var c=popStack[popStack.length-1],q=$("pop-q").value.trim().toLowerCase(),qd=q.replace(/\D/g,"");
+  var l=c.list.filter(function(x){if(!q)return true;var t=popText(c.type,x);return t.indexOf(q)>-1||(qd.length>=3&&t.indexOf(qd)>-1)});
+  $("pop-t").textContent=c.t;
+  $("pop-s").textContent=(c.s?c.s+"  •  ":"")+popSummary(c,l);
+  $("pop-back").style.display=popStack.length>1?"":"none";
+  var H,rows,lim=500;
+  if(c.type==="orders"){
+    H='<tr><th class="hm">Date</th><th>Client</th><th>Product</th><th class="r hm">Total</th><th class="r">Net sales</th>'+(hasCost?'<th class="r hm">Profit</th>':'')+'<th>Status</th></tr>';
+    rows=l.slice(0,lim).map(function(o,i){
+      return '<tr class="po" data-i="'+i+'"><td class="nw hm">'+(o.day?niceDate(o.day):'<span class="mu">No date</span>')+'</td>'+
+        '<td><b>'+(esc(o.name)||"-")+'</b>'+(o.company?'<br><span class="mu">'+esc(o.company)+'</span>':'')+'<span class="smo"><br><span class="mu">'+(o.day?niceDate(o.day):"No date")+'</span></span></td>'+
+        '<td class="prod">'+(esc(o.products.join("\n"))||"-")+'</td><td class="r hm">'+(o.Tcalc?inr(o.Tcalc):"-")+'</td>'+
+        '<td class="r"><b>'+(o.net?inr(o.net):"-")+'</b></td>'+(hasCost?'<td class="r hm">'+(o.profit!=null?inr(o.profit):'<span class="mu">-</span>')+'</td>':'')+
+        '<td><span class="st '+stCls(o.status)+'">'+esc(o.status)+'</span>'+(o.pending>0?'<br><span class="st fu">Due '+inr(o.pending)+'</span>':'')+'</td></tr>';
+    });
+  }else if(c.type==="leads"){
+    H='<tr><th>Date</th><th>Time (IST)</th><th>Name</th><th>Number</th><th>Order</th></tr>';
+    rows=l.slice(0,lim).map(function(x){return '<tr><td class="nw">'+niceDate(x.day)+'</td><td>'+x.time+'</td><td>'+(esc(x.name)||"-")+'</td><td>'+mask(x.num)+'</td><td>'+orderPill(x.k)+sheetTags(x.k)+'</td></tr>'});
+  }else if(c.type==="clients"){
+    H='<tr><th>Client</th><th class="r">Orders</th><th class="r">Net sales</th><th>First order</th><th>Last order</th><th>City</th></tr>';
+    rows=l.slice(0,lim).map(function(x,i){return '<tr class="pc" data-i="'+i+'"><td>'+clientLabel(x)+'</td><td class="r">'+x.n+(x.n>1?' <span class="st conv">Repeat</span>':'')+'</td><td class="r"><b>'+inr(x.net)+'</b></td><td class="nw">'+(x.first?niceDate(x.first):"-")+'</td><td class="nw">'+(x.last?niceDate(x.last):"-")+'</td><td>'+(esc(x.city)||"-")+(x.state?'<br><span class="mu">'+esc(x.state)+'</span>':'')+'</td></tr>'});
+  }else{
+    H='<tr><th>Date</th><th>Day</th><th class="r">Leads</th></tr>';
+    rows=l.slice(0,lim).map(function(x,i){var n=x.list.length;return '<tr class="pd" data-i="'+i+'"><td class="nw">'+niceDate(x.day)+'</td><td>'+DOWL[x.dow]+'</td><td class="r"><span class="pill'+(n?"":" z")+'">'+n+'</span></td></tr>'});
+  }
+  c.view=l;
+  $("pop-head").innerHTML=H;
+  $("pop-rows").innerHTML=rows.join("")||'<tr><td colspan="8" class="mu" style="padding:16px">Nothing to show.</td></tr>';
+  $("pop-more").textContent=l.length>lim?"Showing the first "+lim+" — use search.":"";
+  var b=$("pop-body");b.classList.remove("anim","fwd","bwd");void b.offsetWidth;b.classList.add("anim",dir||"fwd");
+  stagger(b.querySelectorAll("#pop-rows tr"),28,25);
+  $("pop-tw").scrollTop=0;$("pop-tw").scrollLeft=0;
+}
+function openPop(fn,src){
+  var c=fn();if(!c)return;
+  popStack=[c];$("pop-q").value="";
+  var pop=$("pop"),card=$("pop-card");
+  pop.classList.remove("out");pop.classList.add("on");
+  renderPop();
+  var r=src?src.getBoundingClientRect():null;
+  if(r){card.style.transformOrigin=(r.left+r.width/2-card.offsetLeft)+"px "+(r.top+r.height/2-card.offsetTop)+"px"}
+  else card.style.transformOrigin="50% 50%";
+  card.classList.remove("go");void card.offsetWidth;card.classList.add("go");
+  popOpen=true;document.body.style.overflow="hidden";
+  setTimeout(function(){if(window.innerWidth>700)$("pop-q").focus({preventScroll:true})},350);
+}
+function closePop(){
+  if(!popOpen)return;popOpen=false;
+  var pop=$("pop");pop.classList.add("out");
+  setTimeout(function(){pop.classList.remove("on","out");$("pop-card").classList.remove("go")},230);
+  document.body.style.overflow="";
+}
+
+/* ======================= ANIMATIONS ======================= */
+var RM=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function stagger(nodes,step,max){
+  for(var i=0;i<nodes.length;i++){nodes[i].style.setProperty("--d",(i<max?i*step:max*step)+"ms")}
+}
+function fmtLike(src,val){
+  var m=src.match(/^([^\d]*)(\d[\d,]*)(\.(\d+))?(.*)$/);if(!m)return src;
+  var dec=m[4]?m[4].length:0,txt=dec?val.toFixed(dec):String(Math.round(val));
+  if(/,/.test(m[2])||(/₹/.test(m[1])&&val>=1000))txt=(+txt).toLocaleString("en-IN",{minimumFractionDigits:dec,maximumFractionDigits:dec});
+  return m[1]+txt+m[5];
+}
+function countUp(root){
+  if(RM)return;
+  root.querySelectorAll(".kpi .v, .cmp .v").forEach(function(el){
+    var tn=el.firstChild;if(!tn||tn.nodeType!==3)return;
+    var src=tn.nodeValue,m=src.match(/\d[\d,]*(\.\d+)?/);if(!m)return;
+    var target=parseFloat(m[0].replace(/,/g,""));if(!isFinite(target)||target===0)return;
+    var t0=performance.now(),dur=900+Math.min(500,String(Math.round(target)).length*60),tok={};el._cu=tok;
+    (function step(now){
+      if(el._cu!==tok||!tn.isConnected)return;
+      var p=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-p,4);
+      tn.nodeValue=p<1?fmtLike(src,target*e):src;
+      if(p<1)requestAnimationFrame(step);
+    })(t0);
+  });
+}
+function playPanel(panel){
+  if(!panel||RM)return;
+  panel.classList.remove("anim");void panel.offsetWidth;panel.classList.add("anim");
+  stagger(panel.querySelectorAll(".card"),45,14);
+  panel.querySelectorAll(".chart,.daily").forEach(function(c){stagger(c.children,22,30)});
+  panel.querySelectorAll(".hb").forEach(function(h,i){h.style.setProperty("--d",(120+(i%10)*45)+"ms")});
+  panel.querySelectorAll("tbody").forEach(function(tb){stagger(tb.querySelectorAll(":scope>tr"),22,20)});
+  countUp(panel);
+  clearTimeout(panel._at);panel._at=setTimeout(function(){panel.classList.remove("anim")},1600);
+}
+function curPanel(){var p=null;document.querySelectorAll('#sl-dash [id^="sl-tab-"],#ex-wrap>div').forEach(function(x){if(x.style.display!=="none")p=x});return p}
+function moveInd(squish){
+  var ind=$("tab-ind"),on=document.querySelector("#sl-tabs .tab.on");if(!ind||!on)return;
+  ind.style.width=on.offsetWidth+"px";ind.style.height=on.offsetHeight+"px";
+  ind.style.transform="translate("+on.offsetLeft+"px,"+on.offsetTop+"px)";
+  if(squish&&!RM){ind.classList.remove("sq");void ind.offsetWidth;ind.classList.add("sq")}
+}
+/* water drop ripple */
+document.getElementById("sl-dash").addEventListener("pointerdown",function(e){
+  if(RM||e.button>0)return;
+  var el=e.target.closest("button,.tab,.kpi,.cmp>div,.hb.clk,.col.clk,.daily .d,tr.day,tr.ord,tr.clk,tr.po,tr.pc,tr.pd");if(!el)return;
+  var host=el.tagName==="TR"?(e.target.closest("td")||el.cells[0]):el;
+  if(el.classList.contains("d"))host=el.parentNode;
+  var r=host.getBoundingClientRect(),size=Math.max(r.width,r.height)*(el.tagName==="TR"?3:2.4);
+  var cs=getComputedStyle(host);if(cs.position==="static")host.classList.add("rp-rel");
+  host.classList.add("rp-host");
+  var d=document.createElement("span");d.className="drop";
+  d.style.width=d.style.height=size+"px";d.style.left=(e.clientX-r.left-size/2)+"px";d.style.top=(e.clientY-r.top-size/2)+"px";
+  host.appendChild(d);
+  if(el.classList.contains("kpi")||el.classList.contains("tab")||el.tagName==="BUTTON"){el.classList.remove("press");void el.offsetWidth;el.classList.add("press")}
+  setTimeout(function(){d.remove();if(!host.querySelector(".drop"))host.classList.remove("rp-host","rp-rel")},1000);
+});
+/* click → popup */
+document.getElementById("sl-dash").addEventListener("click",function(e){
+  var el=e.target.closest("[data-pop]");
+  if(!el||e.target.closest("#pop"))return;
+  var fn=POPS[el.getAttribute("data-pop")];if(fn)openPop(fn,el);
+});
 
 /* ======================= LOAD + TABS ======================= */
 function renderAll(){
@@ -1453,9 +1724,9 @@ function renderAll(){
   extras.forEach(renderExtra);
   if(leads.length){
     var L=leads[leads.length-1];
-    $("sl-status").textContent="Last lead: "+niceDate(L.day)+" "+L.time+" IST  •  "+orders.length+" orders  •  Update: "+new Date().toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"})+"  •  Google Sheet se live";
+    $("sl-status").textContent="Last lead: "+niceDate(L.day)+" "+L.time+" IST  •  "+orders.length+" orders  •  Update: "+new Date().toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"})+"  •  Live from Google Sheets";
   }else if(orders.length){
-    $("sl-status").textContent=orders.length+" orders  •  Update: "+new Date().toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"})+"  •  Google Sheet se live";
+    $("sl-status").textContent=orders.length+" orders  •  Update: "+new Date().toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"})+"  •  Live from Google Sheets";
   }
 }
 function busy(on){document.querySelectorAll("#sl-dash .refresh").forEach(function(b){b.disabled=on})}
@@ -1465,21 +1736,21 @@ function loadAll(){
   var errs=[],notes=[],jobs=[];
   if(C.LEADS_CSV_URL){
     jobs.push(fetchCSV(C.LEADS_CSV_URL).then(function(r){leads=buildLeads(leadsFromRows(r))})
-      .catch(function(e){errs.push("Leads sheet load nahi hui ("+e.message+")")}));
-  }else{leads=[];notes.push("LEADS_CSV_URL khali hai — code ke upar SL_CONFIG mein Leads sheet ka link daalo.")}
+      .catch(function(e){errs.push("Leads sheet failed to load ("+e.message+")")}));
+  }else{leads=[];notes.push("LEADS_CSV_URL is empty — add the Leads sheet link in SL_CONFIG at the top of the code.")}
   if(C.ORDERS_CSV_URL){
     jobs.push(fetchCSV(C.ORDERS_CSV_URL).then(function(r){orders=ordersFromRows(r)})
-      .catch(function(e){errs.push("Order sheet load nahi hui ("+e.message+")")}));
-  }else{orders=[];notes.push("ORDERS_CSV_URL khali hai — Order sheet ka link daalo.")}
+      .catch(function(e){errs.push("Order sheet failed to load ("+e.message+")")}));
+  }else{orders=[];notes.push("ORDERS_CSV_URL is empty — add the Order sheet link.")}
   PMAP={};
   if(C.PURCHASE_CSV_URL){
     jobs.push(fetchCSV(C.PURCHASE_CSV_URL).then(function(r){PMAP=purchaseFromRows(r)})
-      .catch(function(e){errs.push("Purchase sheet load nahi hui ("+e.message+")")}));
+      .catch(function(e){errs.push("Purchase sheet failed to load ("+e.message+")")}));
   }
   extras.forEach(function(x){
     if(!x.cfg.url){x.data=null;x.err="";return}
     jobs.push(fetchCSV(x.cfg.url).then(function(r){x.data=extraFromRows(r,x.cfg);x.err=""})
-      .catch(function(e){x.err=e.message;errs.push(x.cfg.name+" sheet load nahi hui ("+e.message+")")}));
+      .catch(function(e){x.err=e.message;errs.push(x.cfg.name+" sheet failed to load ("+e.message+")")}));
   });
   Promise.all(jobs).then(function(){
     loading=false;loadedOnce=true;busy(false);
@@ -1487,20 +1758,26 @@ function loadAll(){
     applyCosts();
     OMAP={};orders.forEach(function(o){if(!o.k)return;var m=OMAP[o.k]=OMAP[o.k]||{n:0,net:0};m.n++;m.net+=o.net});
     fillSelect("sa-status",groupList(orders,function(o){return o.status}).map(function(x){return x.k}));
-    fillSelect("sa-src",groupList(orders,function(o){return o.source}).map(function(x){return x.k}).filter(function(k){return k!=="(khali)"}));
-    if(info.sci)notes.push(info.sci+" lead numbers sheet mein 9.19E+11 jaise format mein hain — Number column select karke Format > Number > Plain text karo.");
-    if(info.bad)notes.push(info.bad+" lead rows skip hui (number ya date/time samajh nahi aaya).");
+    fillSelect("sa-src",groupList(orders,function(o){return o.source}).map(function(x){return x.k}).filter(function(k){return k!=="(blank)"}));
+    if(info.sci)notes.push(info.sci+" lead numbers are in 9.19E+11 format in the sheet — select the Number column and use Format > Number > Plain text.");
+    if(info.bad)notes.push(info.bad+" lead rows skipped (number or date/time not understood).");
     var nIss=orderIssues().length;
-    if(nIss)notes.push(nIss+" orders mein sheet ki galti / khali jagah hai — Kaam tab mein \"Sheet ki galtiyan\" dekho.");
+    if(nIss)notes.push(nIss+" orders have errors / blank fields — see \"Sheet errors\" in the Work tab.");
     $("sl-err").textContent=errs.join("  •  ");
     $("sl-info").textContent=notes.join("  •  ");
     renderAll();
+    if(!loadAnimDone){loadAnimDone=true;playPanel(curPanel())}else countUp(curPanel());
+    moveInd(false);
   });
 }
-var TABS=["leads","sales","clients","products","kaam"];
+var TABS=["leads","sales","clients","products","work"];
 function showTab(t){
+  var prev=document.querySelector("#sl-tabs .tab.on");
   TABS.forEach(function(n){$("sl-tab-"+n).style.display=t===n?"":"none";$("tab-"+n).classList.toggle("on",t===n)});
   extras.forEach(function(x,i){var on=t==="ex"+i;x.panel.style.display=on?"":"none";x.btn.classList.toggle("on",on)});
+  var now=document.querySelector("#sl-tabs .tab.on");
+  moveInd(prev!==now);
+  if(prev!==now)playPanel(curPanel());
 }
 
 /* ======================= EVENTS ======================= */
@@ -1528,8 +1805,27 @@ $("sa-clear").addEventListener("click",function(){["sa-from","sa-to","sa-status"
 $("sa-rows").addEventListener("click",function(e){var tr=e.target.closest("tr.ord");if(tr)toggleOrder(tr)});
 document.querySelectorAll("#sl-dash .refresh").forEach(function(b){b.addEventListener("click",loadAll)});
 
+$("pop-x").addEventListener("click",closePop);
+$("pop").addEventListener("click",function(e){if(e.target===this)closePop()});
+$("pop-back").addEventListener("click",function(){if(popStack.length>1){popStack.pop();$("pop-q").value="";renderPop("bwd")}});
+$("pop-q").addEventListener("input",function(){renderPop("none")});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&popOpen){if(popStack.length>1){popStack.pop();renderPop("bwd")}else closePop()}});
+$("pop-rows").addEventListener("click",function(e){
+  var tr=e.target.closest("tr");if(!tr||tr.classList.contains("det"))return;
+  var c=popStack[popStack.length-1],x=c.view&&c.view[+tr.dataset.i];if(!x)return;
+  if(tr.classList.contains("po")){
+    var nx=tr.nextElementSibling;
+    if(nx&&nx.classList.contains("det")){nx.remove();return}
+    var d=document.createElement("tr");d.className="det";d.innerHTML='<td colspan="8">'+orderDetail(x)+'</td>';
+    tr.parentNode.insertBefore(d,tr.nextSibling);
+  }else if(tr.classList.contains("pc")){popStack.push(CO(x)());$("pop-q").value="";renderPop("fwd")}
+  else if(tr.classList.contains("pd")){popStack.push({t:"Leads on "+niceDate(x.day),type:"leads",list:x.list});$("pop-q").value="";renderPop("fwd")}
+});
+window.addEventListener("resize",function(){moveInd(false)});
+
 setupExtras();
 renderAll();
+moveInd(false);
 loadAll();
 var anyUrl=C.LEADS_CSV_URL||C.ORDERS_CSV_URL||C.PURCHASE_CSV_URL||extras.some(function(x){return x.cfg.url});
 if(C.REFRESH_MINUTES>0&&anyUrl)setInterval(loadAll,C.REFRESH_MINUTES*60000);
