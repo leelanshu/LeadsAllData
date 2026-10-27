@@ -2,10 +2,11 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Leads Dashboard</title>
 <style>
-body{margin:0;background:#05070f}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:#05070f;padding:12px}
 #sl-dash{
   --bg:#0a0e1f;--ink:#eef2ff;--mute:#9aa4c7;--stroke:rgba(255,255,255,.16);
   --a:#8b7bff;--b:#38e1c6;--hi:#4ade80;--lo:#fb7185;--r:20px;
@@ -33,12 +34,24 @@ body{margin:0;background:#05070f}
 }
 
 #sl-dash h1{font-size:28px;font-weight:700;letter-spacing:-.02em;margin:0 0 6px}
+#sl-dash .top{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;justify-content:space-between;margin-bottom:6px}
 #sl-dash .sub{display:inline-block;color:var(--mute);font-size:12.5px;padding:5px 12px;border-radius:999px;
   background:rgba(255,255,255,.07);border:1px solid var(--stroke);margin-bottom:16px}
 #sl-dash .err{color:#fecdd3;background:rgba(251,113,133,.15);border:1px solid rgba(251,113,133,.4);
   padding:9px 12px;border-radius:12px;font-size:13px;margin-bottom:12px}
-#sl-dash .err:empty{display:none}
+#sl-dash .info{color:#fde68a;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.38);
+  padding:9px 12px;border-radius:12px;font-size:13px;margin-bottom:12px}
+#sl-dash .err:empty,#sl-dash .info:empty{display:none}
 #sl-dash h2{font-size:15px;font-weight:600;margin:0 0 12px}
+#sl-dash .mu{color:var(--mute);font-size:12px}
+
+#sl-dash .tabs{display:inline-flex;gap:4px;padding:5px;border-radius:999px;background:rgba(255,255,255,.07);
+  border:1px solid var(--stroke);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  max-width:100%;overflow-x:auto;scrollbar-width:none}
+#sl-dash .tabs::-webkit-scrollbar{display:none}
+#sl-dash .tab{border:0;border-radius:999px;background:transparent;padding:8px 20px;font-weight:600;color:var(--mute);white-space:nowrap;flex:none}
+#sl-dash .tab:hover{background:rgba(255,255,255,.1)}
+#sl-dash .tab.on,#sl-dash .tab.on:hover{background:linear-gradient(135deg,var(--a),#5b8cff);color:#fff;box-shadow:0 6px 18px rgba(91,140,255,.4)}
 
 #sl-dash .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin-bottom:14px}
 #sl-dash label{font-size:12px;color:var(--mute);display:flex;flex-direction:column;gap:4px}
@@ -51,26 +64,31 @@ body{margin:0;background:#05070f}
 #sl-dash input:focus,#sl-dash select:focus{border-color:var(--b);background:rgba(255,255,255,.12)}
 #sl-dash button{cursor:pointer}
 #sl-dash button:hover{background:rgba(255,255,255,.17)}
+#sl-dash button:disabled{opacity:.6;cursor:wait}
 #sl-dash button:focus-visible{outline:2px solid var(--b);outline-offset:2px}
-#sl-dash #sl-refresh{background:linear-gradient(135deg,var(--a),#5b8cff);border-color:transparent;font-weight:600}
-#sl-dash #sl-refresh:hover{filter:brightness(1.12)}
+#sl-dash .refresh{background:linear-gradient(135deg,var(--a),#5b8cff);border-color:transparent;font-weight:600}
+#sl-dash .refresh:hover{filter:brightness(1.12);background:linear-gradient(135deg,var(--a),#5b8cff)}
 
 #sl-dash .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:14px}
-#sl-dash .kpi .v{font-size:28px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+#sl-dash .kpi{min-width:0}
+#sl-dash .kpi .v{font-size:28px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 #sl-dash .kpi .l{font-size:13px;margin-top:4px}
 #sl-dash .kpi .s{font-size:12px;color:var(--mute);margin-top:2px}
+#sl-dash .kpi.good .v{color:#86efac}
+#sl-dash .kpi.warn .v{color:#fde68a}
 
 #sl-dash .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
-@media(max-width:800px){#sl-dash .grid2{grid-template-columns:1fr}#sl-dash{padding:18px 12px;border-radius:20px}}
+#sl-dash .grid2>.card{min-width:0}
 
-#sl-dash .chart{display:flex;align-items:flex-end;height:190px;padding-top:18px}
+#sl-dash .chart{display:flex;align-items:flex-end;gap:4px;height:190px;padding-top:18px}
+#sl-dash .chart.wide{min-width:560px}
 #sl-dash .col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0}
-#sl-dash .col .b{width:95%;min-height:1px;border-radius:6px 6px 0 0;
+#sl-dash .col .b{width:100%;min-height:1px;border-radius:6px 6px 0 0;
   background:linear-gradient(180deg,var(--b),var(--a));box-shadow:0 0 14px rgba(139,123,255,.35);transition:filter .2s}
 #sl-dash .col .b:hover{filter:brightness(1.25)}
 #sl-dash .col .b.max{background:linear-gradient(180deg,#86efac,#16a34a);box-shadow:0 0 14px rgba(74,222,128,.45)}
 #sl-dash .col .b.min{background:linear-gradient(180deg,#fda4af,#e11d48);box-shadow:0 0 14px rgba(251,113,133,.4)}
-#sl-dash .col .n{font-size:10px;color:var(--mute);margin-bottom:3px}
+#sl-dash .col .n{font-size:10px;color:var(--mute);margin-bottom:3px;white-space:nowrap}
 #sl-dash .col .x{font-size:10px;color:var(--mute);margin-top:5px;white-space:nowrap}
 
 #sl-dash .scroll{overflow-x:auto;padding-bottom:8px}
@@ -85,120 +103,391 @@ body{margin:0;background:#05070f}
 
 #sl-dash .tbar{display:flex;flex-wrap:wrap;gap:10px;align-items:end;justify-content:space-between;margin-bottom:10px}
 #sl-dash table{width:100%;border-collapse:collapse;font-size:14px}
-#sl-dash th,#sl-dash td{padding:10px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,.08)}
-#sl-dash th{font-size:12px;font-weight:600;color:var(--mute);position:sticky;top:0;z-index:1;background:rgba(18,24,48,.94)}
-#sl-dash tr.day{cursor:pointer;transition:background .15s}
-#sl-dash tr.day:hover{background:rgba(255,255,255,.07)}
+#sl-dash th,#sl-dash td{padding:10px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,.08);vertical-align:top}
+#sl-dash th{font-size:12px;font-weight:600;color:var(--mute);position:sticky;top:0;z-index:1;background:rgba(18,24,48,.94);white-space:nowrap}
+#sl-dash tr.day,#sl-dash tr.ord{cursor:pointer;transition:background .15s}
+#sl-dash tr.day:hover,#sl-dash tr.ord:hover{background:rgba(255,255,255,.06)}
 #sl-dash tr.det td{background:rgba(0,0,0,.25);padding:0}
 #sl-dash .det-in{max-height:320px;overflow:auto;padding:6px 10px}
+#sl-dash .det-in table{min-width:460px}
 #sl-dash .pill{display:inline-block;min-width:36px;text-align:center;padding:3px 10px;border-radius:999px;font-weight:700;font-size:13px;
   background:rgba(139,123,255,.22);color:#ddd8ff;border:1px solid rgba(139,123,255,.45)}
 #sl-dash .pill.z{background:rgba(251,113,133,.16);color:#fecdd3;border-color:rgba(251,113,133,.4)}
 #sl-dash .tw{max-height:560px;overflow:auto}
 #sl-dash .note{font-size:12px;color:var(--mute);margin-top:10px}
+#sl-dash .stbl{min-width:1080px}
+#sl-dash .cut{max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#sl-dash .nw{white-space:nowrap}
+#sl-dash .wide-l .hb{grid-template-columns:190px 1fr 110px}
+#sl-dash .r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+#sl-dash .prod{max-width:240px;white-space:pre-line}
 
+#sl-dash .st{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;border:1px solid;white-space:nowrap}
+#sl-dash .st.conv{background:rgba(74,222,128,.16);color:#bbf7d0;border-color:rgba(74,222,128,.45)}
+#sl-dash .st.not{background:rgba(251,113,133,.16);color:#fecdd3;border-color:rgba(251,113,133,.45)}
+#sl-dash .st.fu{background:rgba(251,191,36,.16);color:#fde68a;border-color:rgba(251,191,36,.45)}
+#sl-dash .st.disp{background:rgba(56,189,248,.16);color:#bae6fd;border-color:rgba(56,189,248,.45)}
+#sl-dash .st.pen{background:rgba(255,255,255,.08);color:#c7cdea;border-color:var(--stroke)}
+#sl-dash .tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;margin:3px 3px 0 0;
+  background:rgba(56,225,198,.14);color:#a7f3e6;border:1px solid rgba(56,225,198,.4);white-space:nowrap}
+#sl-dash .hb{display:grid;grid-template-columns:120px 1fr 110px;gap:10px;align-items:center;font-size:13px;margin-bottom:10px}
+#sl-dash .hb .tr{height:10px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+#sl-dash .hb .tr i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--b),var(--a))}
+#sl-dash .hb .tr i.conv{background:linear-gradient(90deg,#86efac,#16a34a)}
+#sl-dash .hb .tr i.not{background:linear-gradient(90deg,#fda4af,#e11d48)}
+#sl-dash .hb .tr i.fu{background:linear-gradient(90deg,#fde68a,#f59e0b)}
+#sl-dash .hb .tr i.disp{background:linear-gradient(90deg,#7dd3fc,#0284c7)}
+#sl-dash .hb .tr i.pen{background:rgba(255,255,255,.35)}
+#sl-dash .hb b{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+#sl-dash .hb span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+#sl-dash .dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px 18px;padding:12px 6px;font-size:13px}
+#sl-dash .dgrid div b{display:block;font-size:11px;color:var(--mute);font-weight:600;margin-bottom:2px}
+#sl-dash .dgrid .full{grid-column:1/-1}
+#sl-dash .calc{font-variant-numeric:tabular-nums;line-height:1.7}
+
+#sl-dash .mtbl{min-width:760px}
+#sl-dash .cmp{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+#sl-dash .cmp>div{padding:12px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);min-width:0}
+#sl-dash .cmp .v{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
+#sl-dash .cmp .l{font-size:12px;color:var(--mute)}
+#sl-dash .cmp .s{font-size:12px;color:var(--mute);margin-top:4px}
+#sl-dash .chg{font-size:12px;font-weight:700;margin-left:6px;white-space:nowrap}
+#sl-dash .chg.up{color:#86efac}#sl-dash .chg.dn{color:#fda4af}#sl-dash .chg.eq{color:var(--mute)}
+#sl-dash .hint{font-size:13px;color:var(--mute);padding:10px 12px;border-radius:12px;border:1px dashed rgba(255,255,255,.18)}
+#sl-dash .gl{display:flex;flex-wrap:wrap;gap:4px}
+#sl-dash .mb{margin-bottom:12px}
 #sl-dash ::-webkit-scrollbar{width:8px;height:8px}
 #sl-dash ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.22);border-radius:8px}
 #sl-dash ::-webkit-scrollbar-track{background:transparent}
 
+/* ---------- Responsive ---------- */
+@media(max-width:800px){
+  #sl-dash .grid2{grid-template-columns:1fr}
+  #sl-dash{padding:18px 12px;border-radius:20px}
+}
+@media(max-width:600px){
+  body{padding:6px}
+  #sl-dash{padding:16px 10px;border-radius:18px}
+  #sl-dash h1{font-size:22px}
+  #sl-dash .top{flex-direction:column;align-items:stretch}
+  #sl-dash .tabs{display:flex;width:100%;flex-wrap:wrap;border-radius:18px;overflow:visible}
+  #sl-dash .tab{flex:1 1 30%;padding:8px 10px}
+  #sl-dash .card{padding:12px;border-radius:16px}
+  #sl-dash .bar{gap:8px}
+  #sl-dash .bar label{flex:1 1 140px}
+  #sl-dash .bar input,#sl-dash .bar select{width:100%}
+  #sl-dash .bar button{flex:1 1 auto}
+  #sl-dash input,#sl-dash select{font-size:16px} /* iPhone zoom rokne ke liye */
+  #sl-dash .kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  #sl-dash .kpi .v{font-size:20px}
+  #sl-dash .kpi .l{font-size:12px}
+  #sl-dash .kpi .s{font-size:11px}
+  #sl-dash .chart{height:160px}
+  #sl-dash .hb,#sl-dash .wide-l .hb{grid-template-columns:110px 1fr 88px;gap:8px;font-size:12px}
+  #sl-dash table{font-size:13px}
+  #sl-dash th,#sl-dash td{padding:8px}
+  #sl-dash .tw{max-height:480px}
+  #sl-dash .cmp{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  #sl-dash .cmp .v{font-size:18px}
+}
 @media(prefers-reduced-motion:reduce){#sl-dash *{transition:none!important}}
 </style>
 </head>
 <body>
 <div id="sl-dash">
-  <h1>Leads Dashboard</h1>
-  <div class="sub" id="sl-status">Loading…</div>
-  <div id="sl-err" class="err"></div>
-
-  <div class="bar card">
-    <label>From<input type="date" id="sl-from"></label>
-    <label>To<input type="date" id="sl-to"></label>
-    <button id="sl-all">All time</button>
-    <button id="sl-7">Last 7 din</button>
-    <button id="sl-30">Last 30 din</button>
-    <label>Search (naam / number)<input type="search" id="sl-q" placeholder="search…"></label>
-    <button id="sl-refresh">Refresh</button>
-  </div>
-
-  <div class="kpis" id="sl-kpis"></div>
-
-  <div id="sl-search" class="card" style="display:none;margin-bottom:12px"></div>
-
-  <div class="grid2">
-    <div class="card"><h2>Din ke hisaab se (average leads / din)</h2><div class="chart" id="sl-dow"></div></div>
-    <div class="card"><h2>Time ke hisaab se (total leads, IST ghanta)</h2><div class="chart" id="sl-hr"></div></div>
-  </div>
-
-  <div class="card" style="margin-bottom:12px">
-    <h2>Har din ki leads (bar par click karo)</h2>
-    <div class="scroll"><div class="daily" id="sl-daily"></div></div>
-    <div class="legend">Hara = sabse zyada &nbsp; Laal = sabse kam &nbsp; Grey = Sunday</div>
-  </div>
-
-  <div class="card">
-    <div class="tbar">
-      <h2 style="margin:0">Din-wise table (row par click = leads ki list)</h2>
-      <label>Sort
-        <select id="sl-sort">
-          <option value="new">Naya pehle</option>
-          <option value="old">Purana pehle</option>
-          <option value="most">Zyada leads pehle</option>
-          <option value="least">Kam leads pehle</option>
-        </select>
-      </label>
+  <div class="top">
+    <div>
+      <h1>Leads Dashboard</h1>
+      <div class="sub" id="sl-status">Loading…</div>
     </div>
-    <div class="tw"><table><thead><tr><th>Date</th><th>Din</th><th>Leads</th><th>Pehli lead</th><th>Aakhri lead</th></tr></thead><tbody id="sl-rows"></tbody></table></div>
-    <div class="note">Sab time India (IST) mein dikhaye gaye hain.</div>
+    <div class="tabs" id="sl-tabs">
+      <button class="tab on" id="tab-leads">Leads</button>
+      <button class="tab" id="tab-sales">Sales</button>
+      <button class="tab" id="tab-clients">Clients</button>
+      <button class="tab" id="tab-products">Products</button>
+      <button class="tab" id="tab-kaam">Kaam</button>
+    </div>
   </div>
+  <div id="sl-err" class="err"></div>
+  <div id="sl-info" class="info"></div>
+
+  <!-- ============ LEADS ============ -->
+  <div id="sl-tab-leads">
+    <div class="bar card">
+      <label>From<input type="date" id="sl-from"></label>
+      <label>To<input type="date" id="sl-to"></label>
+      <button id="sl-all">All time</button>
+      <button id="sl-7">Last 7 din</button>
+      <button id="sl-30">Last 30 din</button>
+      <label>Search (naam / number)<input type="search" id="sl-q" placeholder="search…"></label>
+      <button class="refresh">Refresh</button>
+    </div>
+
+    <div class="kpis" id="sl-kpis"></div>
+    <div id="sl-search" class="card" style="display:none;margin-bottom:12px"></div>
+
+    <div class="grid2">
+      <div class="card"><h2>Din ke hisaab se (average leads / din)</h2><div class="chart" id="sl-dow"></div></div>
+      <div class="card"><h2>Time ke hisaab se (total leads, IST ghanta)</h2><div class="scroll"><div class="chart wide" id="sl-hr"></div></div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px">
+      <h2>Har din ki leads (bar par click karo)</h2>
+      <div class="scroll"><div class="daily" id="sl-daily"></div></div>
+      <div class="legend">Hara = sabse zyada &nbsp; Laal = sabse kam &nbsp; Grey = Sunday</div>
+    </div>
+
+    <div class="card">
+      <div class="tbar">
+        <h2 style="margin:0">Din-wise table (row par click = leads ki list)</h2>
+        <label>Sort
+          <select id="sl-sort">
+            <option value="new">Naya pehle</option>
+            <option value="old">Purana pehle</option>
+            <option value="most">Zyada leads pehle</option>
+            <option value="least">Kam leads pehle</option>
+          </select>
+        </label>
+      </div>
+      <div class="tw"><table><thead><tr><th>Date</th><th>Din</th><th>Leads</th><th>Pehli lead</th><th>Aakhri lead</th></tr></thead><tbody id="sl-rows"></tbody></table></div>
+      <div class="note">Sab time India (IST) mein dikhaye gaye hain. "Order" tag = is number ka order, Order sheet mein mila.</div>
+    </div>
+  </div>
+
+  <!-- ============ SALES (Order sheet se) ============ -->
+  <div id="sl-tab-sales" style="display:none">
+    <div class="bar card">
+      <label>Order date From<input type="date" id="sa-from"></label>
+      <label>To<input type="date" id="sa-to"></label>
+      <label>Order status<select id="sa-status"><option value="">Sab</option></select></label>
+      <label>GST<select id="sa-gst">
+        <option value="">Sab</option>
+        <option value="with">GST ke saath</option>
+        <option value="without">Bina GST</option>
+        <option value="check">Check karo</option>
+      </select></label>
+      <label>Lead source<select id="sa-src"><option value="">Sab</option></select></label>
+      <label>Search (client / company / number / product)<input type="search" id="sa-q" placeholder="search…"></label>
+      <button id="sa-clear">Clear</button>
+      <button class="refresh">Refresh</button>
+    </div>
+
+    <div class="card mb"><h2>Is mahina vs pichhla mahina <span class="mu" id="sa-cmp-sub"></span></h2><div class="cmp" id="sa-cmp"></div></div>
+    <div class="kpis" id="sa-kpis"></div>
+    <div class="kpis" id="sa-profit" style="display:none"></div>
+
+    <div class="grid2">
+      <div class="card"><h2>Mahine ke hisaab se asli sale (bina GST / delivery)</h2><div class="scroll"><div class="chart" id="sa-month"></div></div></div>
+      <div class="card"><h2>Order status</h2><div id="sa-split"></div></div>
+    </div>
+    <div class="grid2">
+      <div class="card"><h2>Top products (orders)</h2><div id="sa-prod" class="wide-l"></div></div>
+      <div class="card"><h2>Lead source (orders · asli sale)</h2><div id="sa-srcs"></div></div>
+    </div>
+    <div class="grid2">
+      <div class="card"><h2>GST</h2><div id="sa-gsts"></div><h2 style="margin-top:18px">Payment kahan aaya</h2><div id="sa-pay"></div></div>
+      <div class="card"><h2>Delivery / Porter</h2><div id="sa-del"></div><div class="note">"By client" porter ka charge client ne khud diya — hamare hisaab mein count nahi hota. Delivery charge jo client se liya, woh Total mein hai par asli sale mein nahi gina.</div></div>
+    </div>
+
+    <div class="card">
+      <h2 id="sa-title">Orders</h2>
+      <div class="tw">
+        <table class="stbl">
+          <thead id="sa-head"></thead>
+          <tbody id="sa-rows"></tbody>
+        </table>
+      </div>
+      <div class="note" id="sa-note"></div>
+    </div>
+  </div>
+
+  <!-- ============ CLIENTS ============ -->
+  <div id="sl-tab-clients" style="display:none">
+    <div class="bar card">
+      <label>Order date From<input type="date" id="cl-from"></label>
+      <label>To<input type="date" id="cl-to"></label>
+      <label>Search (client / company / number / shehar)<input type="search" id="cl-q" placeholder="search…"></label>
+      <label>Sort<select id="cl-sort">
+        <option value="sale">Zyada sale pehle</option>
+        <option value="orders">Zyada orders pehle</option>
+        <option value="recent">Naya order pehle</option>
+      </select></label>
+      <button id="cl-clear">Clear</button>
+      <button class="refresh">Refresh</button>
+    </div>
+    <div class="kpis" id="cl-kpis"></div>
+    <div class="card mb">
+      <h2 id="cl-title">Clients</h2>
+      <div class="tw"><table class="stbl mtbl"><thead><tr><th>#</th><th>Client</th><th>Orders</th><th class="r">Asli sale</th><th>Pehla order</th><th>Aakhri order</th><th>Source</th><th>Shehar</th></tr></thead><tbody id="cl-rows"></tbody></table></div>
+      <div class="note">Client = same phone number (last 10 digits). Number na ho to naam + company se.</div>
+    </div>
+    <div class="grid2">
+      <div class="card"><h2>Lead aane ke kitne din baad order aaya</h2><div id="cl-l2o"></div></div>
+      <div class="card"><h2>State</h2><div id="cl-state"></div><h2 style="margin-top:18px">Shehar</h2><div id="cl-city"></div></div>
+    </div>
+    <div class="card">
+      <h2>Source ka asli faayda</h2>
+      <div class="tw"><table class="stbl mtbl"><thead><tr><th>Source</th><th class="r">Leads</th><th class="r">Orders</th><th class="r">Clients</th><th class="r">Conversion</th><th class="r">Asli sale</th><th class="r">Avg order</th><th class="r">Sale share</th><th class="r">Lead→order (din)</th></tr></thead><tbody id="cl-src"></tbody></table></div>
+      <div class="note" id="cl-src-note"></div>
+    </div>
+  </div>
+
+  <!-- ============ PRODUCTS ============ -->
+  <div id="sl-tab-products" style="display:none">
+    <div class="bar card">
+      <label>Order date From<input type="date" id="pr-from"></label>
+      <label>To<input type="date" id="pr-to"></label>
+      <label>Search product<input type="search" id="pr-q" placeholder="search…"></label>
+      <label>Sort<select id="pr-sort">
+        <option value="sale">Zyada sale pehle</option>
+        <option value="orders">Zyada orders pehle</option>
+        <option value="qty">Zyada quantity pehle</option>
+      </select></label>
+      <button id="pr-clear">Clear</button>
+      <button class="refresh">Refresh</button>
+    </div>
+    <div class="kpis" id="pr-kpis"></div>
+    <div class="card">
+      <h2 id="pr-title">Products</h2>
+      <div class="tw"><table class="stbl mtbl"><thead id="pr-head"></thead><tbody id="pr-rows"></tbody></table></div>
+      <div class="note" id="pr-note"></div>
+    </div>
+  </div>
+
+  <!-- ============ KAAM ============ -->
+  <div id="sl-tab-kaam" style="display:none">
+    <div class="bar card">
+      <span class="mu" style="flex:1;min-width:200px">Abhi ki halat — sab orders par (date filter nahi)</span>
+      <button class="refresh">Refresh</button>
+    </div>
+    <div class="kpis" id="km-kpis"></div>
+    <div class="card mb">
+      <h2 id="km-open-t">Kaam baaki (purane pehle)</h2>
+      <div class="tw"><table class="stbl mtbl"><thead><tr><th>Kitne din</th><th>Order date</th><th>Client</th><th>Product</th><th>Status</th><th>Delivery</th><th class="r">Pending</th></tr></thead><tbody id="km-open"></tbody></table></div>
+      <div class="note">Dispatch wale orders ke din, Dispatch Date se gine jaate hain (agar sheet mein ho), warna order date se.</div>
+    </div>
+    <div class="card mb">
+      <h2 id="km-pay-t">Paisa baaki</h2>
+      <div id="km-pay-k"></div>
+      <div class="tw"><table class="stbl mtbl"><thead><tr><th>Client</th><th class="r">Pending</th><th class="r">Total</th><th>Order date</th><th>Kitne din se</th><th>Status</th><th>Payment</th></tr></thead><tbody id="km-pay"></tbody></table></div>
+    </div>
+    <div class="card mb">
+      <h2>Delivery mein kitne din lagte hain</h2>
+      <div id="km-del"></div>
+    </div>
+    <div class="card">
+      <h2 id="km-err-t">Sheet ki galtiyan</h2>
+      <div id="km-err-sum"></div>
+      <div class="tw"><table class="stbl mtbl"><thead><tr><th>Row</th><th>Client</th><th>Galti</th></tr></thead><tbody id="km-err"></tbody></table></div>
+      <div class="note">Row = Order sheet ki line number. Sheet mein theek karo, dashboard apne aap update ho jayega.</div>
+    </div>
+  </div>
+
+  <!-- ============ EXTRA SHEETS (auto) ============ -->
+  <div id="ex-wrap"></div>
 </div>
 
 <script>
-/* ================= SETTINGS ================= */
+/* ======================= SETTINGS (sirf yahan badlo) =======================
+   Link kaise nikalein: Google Sheet kholo > File > Share > Publish to web >
+   sahi tab chuno > "Comma-separated values (.csv)" > Publish > link copy karke neeche "" ke andar paste.
+   (Normal share link bhi chalega agar sheet "Anyone with the link" par share hai.)
+   Dashboard sirf DIKHATA hai — data badalna ho to Google Sheet mein badlo.
+============================================================================ */
 var SL_CONFIG = {
-  // Google Sheet link: File > Share > Publish to web > us sheet/tab ko "Comma-separated values (.csv)" mein publish karo, aur link yahan daalo.
-  SHEET_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRPD7MHOYZjkX7zdqbfYytuSixykQrFBcHqYBzPDqVKYr7Dkb_OPGfyp1jIjCnCCFeyb4E08MX6C7jq/pub?gid=950930653&single=true&output=csv",
-  REFRESH_MINUTES: 5,
-  SHOW_NUMBERS: true,          // false = number chhupa ke dikhega (98XXXXXX37)
+  // 1) LEADS sheet ka link
+  LEADS_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRPD7MHOYZjkX7zdqbfYytuSixykQrFBcHqYBzPDqVKYr7Dkb_OPGfyp1jIjCnCCFeyb4E08MX6C7jq/pub?gid=950930653&single=true&output=csv",
+
+  // 2) ORDERS sheet ka link (Sales tab isi se banta hai)
+  ORDERS_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSd2ugstIdSQrCyQhXQDYQw4Q8Dy_zH7zp0bcgZezOm-TQncMcqwtXaZe73lT2wPE_mwPnv7VtLCdHc/pub?gid=0&single=true&output=csv",
+
+  // 3) PURCHASE sheet ka link (product ka purchase rate). Columns: Product, Purchase Rate (aur chahe to Sale Rate).
+  //    Product ke naam se Order sheet ke products match honge aur Profit apne aap banega.
+  PURCHASE_CSV_URL: "",
+
+  // 4) Future ki nayi sheets — har sheet ke liye ek line. Har sheet ka apna tab banega
+  //    aur phone number se leads ke saath match hoga.
+  EXTRA_SHEETS: [
+    // { name: "Follow-ups", url: "" },
+    // { name: "Payments",   url: "", numberColumn: "Mobile No" }   // numberColumn = agar column ka naam alag ho
+  ],
+
+  GST_RATE: 18,                // GST % (Total mein GST hai ya nahi, ye dashboard khud match karke pata lagata hai)
+  REFRESH_MINUTES: 5,          // har kitne minute mein sheets dobara load ho (0 = band)
+  SHOW_NUMBERS: true,          // false = number chhupa ke dikhega (9198XXXX37)
   OWN_NUMBERS: ["919717130237","918510003537","919891233778"], // apne numbers jo leads mein nahi ginne
-  NO_TZ_ASSUMED: "+05:30"      // agar sheet ke time mein timezone nahi hai to IST maana jayega
+  DATE_ORDER: "DMY",           // sheet mein 05/10/2026 = 5 Oct ho to "DMY", 10 May ho to "MDY"
+  UNIQUE_LEADS: true,          // true = ek number ki sirf pehli lead gini jayegi
+  NO_TZ_ASSUMED: "+05:30"      // sheet ke time mein timezone na ho to IST maana jayega
 };
-/* Built-in data (optional backup): [number, naam, time] */
-var SL_DATA = [];
-/* ============================================ */
+/* ========================================================================= */
 
 (function(){
+"use strict";
+var C=SL_CONFIG;
 var DOW=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
 var DOWMAP={Mon:0,Tue:1,Wed:2,Thu:3,Fri:4,Sat:5,Sun:6};
+var MON={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+var MNAME=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+var GR=(+C.GST_RATE||18)/100;
 var fmt=new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Kolkata",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false,weekday:"short"});
-var leads=[], days=[], view=[];
+
+var leads=[],LMAP={},days=[],view=[],orders=[],OMAP={},oview=[],extras=[],hasCost=false;
+var loading=false,loadedOnce=false,info={bad:0,sci:0,repeat:0};
+
 function $(id){return document.getElementById(id)}
-function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function pad(n){return (n<10?"0":"")+n}
+function digits(v){return String(v==null?"":v).trim().replace(/\.0+$/,"").replace(/\D/g,"")}
+function isSci(v){return /^\d(\.\d+)?e\+?\d+$/i.test(String(v||"").trim())}
+function key(v){if(isSci(v))return "";var d=digits(v);return d.length>=10?d.slice(-10):(d.length>=8?d:"")}
+function mask(n){n=String(n||"");return C.SHOW_NUMBERS||n.length<7?esc(n):esc(n.slice(0,4)+"XXXX"+n.slice(-2))}
+function clean(s){s=String(s==null?"":s).replace(/\s+/g," ").trim();return /^(nan|null|undefined|none|-|n\/a)$/i.test(s)?"":s}
+var OWNK={};(C.OWN_NUMBERS||[]).forEach(function(n){var k=key(n);if(k)OWNK[k]=1});
 
 function parts(d){var o={};fmt.formatToParts(d).forEach(function(p){o[p.type]=p.value});
   var h=o.hour==="24"?"00":o.hour;
-  return {day:o.year+"-"+o.month+"-"+o.day,hr:+h,min:o.minute,dow:DOWMAP[o.weekday],time:h+":"+o.minute};}
+  return {day:o.year+"-"+o.month+"-"+o.day,hr:+h,dow:DOWMAP[o.weekday],time:h+":"+o.minute};}
 
-function build(rows){
-  var seen={},out=[];
-  rows.forEach(function(r){
-    var num=String(r[0]||"").replace(/\D/g,"");
-    if(!num||SL_CONFIG.OWN_NUMBERS.indexOf(num)>-1)return;
-    var ts=String(r[2]||"").trim().replace(" ","T");
-    if(!/^\d{4}-\d\d-\d\dT\d\d:\d\d/.test(ts))return;
-    if(!/(Z|[+-]\d\d:?\d\d)$/.test(ts))ts+=SL_CONFIG.NO_TZ_ASSUMED;
-    var t=new Date(ts); if(isNaN(t))return;
-    if(seen[num]&&seen[num].t<=t)return;
-    var p=parts(t);
-    var o={num:num,name:r[1]||"",t:t,day:p.day,hr:p.hr,dow:p.dow,time:p.time};
-    seen[num]=o;
-  });
-  for(var k in seen)out.push(seen[k]);
-  out.sort(function(a,b){return a.t-b.t});
-  return out;
+/* ---------- Date / time samajhna (ISO, 26/10/2026 14:30, 26-Oct-2026 2:30 PM, etc.) ---------- */
+var TM="(?:[T ,]+(\\d{1,2}):(\\d{2})(?::(\\d{2}))?(?:\\.\\d+)?\\s*([AaPp]\\.?[Mm]\\.?)?)?\\s*(Z|[+-]\\d\\d:?\\d\\d)?$";
+var RX=[
+  new RegExp("^(\\d{4})[-/.](\\d{1,2})[-/.](\\d{1,2})"+TM),
+  new RegExp("^(\\d{1,2})[-/.](\\d{1,2})[-/.](\\d{2,4})"+TM),
+  new RegExp("^(\\d{1,2})[- ]([A-Za-z]{3,9})[- ,]+(\\d{4})"+TM),
+  new RegExp("^([A-Za-z]{3,9})[- ](\\d{1,2})(?:st|nd|rd|th)?[- ,]+(\\d{4})"+TM)
+];
+function parseTS(s){
+  s=String(s||"").trim();if(!s)return null;
+  var m,y,mo,d,h=0,mi=0,se=0,hasT=false,tz;
+  if((m=s.match(RX[0]))){y=+m[1];mo=+m[2];d=+m[3]}
+  else if((m=s.match(RX[1]))){
+    var a=+m[1],b=+m[2];y=+m[3];if(y<100)y+=2000;
+    if(C.DATE_ORDER==="MDY"){mo=a;d=b}else{d=a;mo=b}
+    if(mo>12&&d<=12){var x=mo;mo=d;d=x}
+  }
+  else if((m=s.match(RX[2]))){d=+m[1];mo=MON[m[2].slice(0,3).toLowerCase()];y=+m[3]}
+  else if((m=s.match(RX[3]))){mo=MON[m[1].slice(0,3).toLowerCase()];d=+m[2];y=+m[3]}
+  else return null;
+  if(m[4]!=null){hasT=true;h=+m[4];mi=+m[5];se=+(m[6]||0);
+    if(m[7]){var pm=/p/i.test(m[7]);if(h===12)h=pm?12:0;else if(pm)h+=12}}
+  tz=m[8]||"";
+  if(!mo||mo>12||!d||d>31||h>23||mi>59||se>59)return null;
+  if(tz&&tz!=="Z"&&tz.indexOf(":")<0)tz=tz.slice(0,3)+":"+tz.slice(3);
+  var dt=new Date(y+"-"+pad(mo)+"-"+pad(d)+"T"+pad(h)+":"+pad(mi)+":"+pad(se)+(tz||C.NO_TZ_ASSUMED));
+  return isNaN(dt)?null:{d:dt,hasT:hasT};
 }
+function dayOnly(s){var p=parseTS(s);return p?parts(p.d).day:""}
 
+function addDays(s,n){var d=new Date(s+"T00:00:00Z");d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)}
+function dowOf(s){var d=new Date(s+"T00:00:00Z").getUTCDay();return (d+6)%7}
+function niceDate(s){if(!/^\d{4}-\d\d-\d\d$/.test(s||""))return esc(s||"");var p=s.split("-");return p[2]+"-"+p[1]+"-"+p[0]}
+
+/* ---------- CSV ---------- */
 function parseCSV(text){
   var rows=[],row=[],f="",q=false;
+  text=String(text||"").replace(/^\uFEFF/,"");
   for(var i=0;i<text.length;i++){var c=text[i];
     if(q){ if(c==='"'){ if(text[i+1]==='"'){f+='"';i++} else q=false } else f+=c }
     else if(c==='"')q=true;
@@ -209,77 +498,347 @@ function parseCSV(text){
   if(f!==""||row.length){row.push(f);rows.push(row)}
   return rows;
 }
-function rowsFromCSV(text){
-  return parseCSV(text).map(function(r){
-    var num="",ts="",name="";
-    r.forEach(function(c){c=(c||"").trim();
-      if(!c)return;
-      if(!ts&&/^\d{4}-\d\d-\d\d[T ]\d\d:\d\d/.test(c))ts=c;
-      else if(!num&&/^\+?\d{8,15}$/.test(c))num=c;
-      else if(!name)name=c;});
-    return [num,name,ts];
+function isBlank(r){return !r||!r.some(function(c){return String(c).trim()!==""})}
+function nonBlank(rows){return rows.filter(function(r){return !isBlank(r)})}
+function csvUrl(u){
+  u=String(u||"").trim();
+  var m=u.match(/docs\.google\.com\/spreadsheets\/d\/([a-zA-Z0-9_-]{20,})/);
+  if(m&&!/\/pub|output=csv|gviz|export/.test(u)){
+    var g=(u.match(/[#&?]gid=(\d+)/)||[])[1]||"0";
+    return "https://docs.google.com/spreadsheets/d/"+m[1]+"/gviz/tq?tqx=out:csv&gid="+g;
+  }
+  return u;
+}
+function fetchCSV(u){
+  u=csvUrl(u);
+  return fetch(u+(u.indexOf("?")>-1?"&":"?")+"t="+Date.now(),{cache:"no-store"})
+    .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.text()})
+    .then(function(t){
+      if(/^\s*<(!doctype|html)/i.test(t))throw new Error("CSV nahi mila — sheet publish/share check karo");
+      return parseCSV(t);
+    });
+}
+function classify(hdr,rules){
+  var ix={};
+  hdr.forEach(function(c,i){
+    c=String(c||"").toLowerCase().replace(/\s+/g," ").trim();if(!c)return;
+    for(var j=0;j<rules.length;j++){
+      if(rules[j][1].test(c)){var k=rules[j][0];if(k!=="skip"&&ix[k]===undefined)ix[k]=i;break}
+    }
   });
+  return ix;
+}
+var NUM_RX=/number|phone|mobile|contact|whatsapp|wa_?id|^mob|^ph\.?$|^no\.?$/;
+var LEAD_RULES=[["src",/source|platform|campaign|utm|channel|medium/],["name",/name|naam/],["num",NUM_RX],["ts",/timestamp|date|created|received|^when/],["tm",/time/]];
+
+/* ---------- Numbers / amounts ---------- */
+function num(s){
+  s=String(s==null?"":s).replace(/,/g,"");
+  var m=s.match(/\d+(\.\d+)?/);return m?parseFloat(m[0]):null;
+}
+function lineNum(line){   // "Diary ₹180/Pc" -> 180 , "Lollipop : qty: 2" -> 2 , "50 Pcs" -> 50
+  line=String(line||"");
+  if(line.indexOf("₹")>-1)return num(line.slice(line.indexOf("₹")+1));
+  if(line.indexOf(":")>-1)return num(line.slice(line.lastIndexOf(":")+1));
+  return num(line);
+}
+function lines(s){return String(s==null?"":s).split(/\r?\n+/).map(function(x){return x.trim()}).filter(Boolean)}
+function splitTop(s){ // comma se todna, bracket ke andar wale comma chhod ke
+  var out=[],cur="",dep=0;
+  for(var i=0;i<s.length;i++){var c=s[i];
+    if(c==="("||c==="[")dep++;else if((c===")"||c==="]")&&dep>0)dep--;
+    if(c===","&&!dep){out.push(cur);cur=""}else cur+=c;}
+  out.push(cur);
+  return out.map(function(x){return x.trim()}).filter(Boolean);
+}
+function productList(s){
+  var l=lines(s);
+  if(l.length===1){var p=splitTop(l[0]);if(p.length>1&&p.every(function(x){return /[a-z]/i.test(x)}))return p}
+  return l;
+}
+function qtyList(s){
+  var l=lines(s);
+  if(l.length===1&&/^\d+(\s*,\s*\d+)+$/.test(l[0])){
+    var g=l[0].split(/\s*,\s*/);
+    if(g.slice(1).some(function(x){return x.length!==2&&x.length!==3}))return g;  // "1,1,1,1" = list, "1,000" = number
+  }
+  return l;
+}
+function inr(n){return "₹"+Math.round(n||0).toLocaleString("en-IN")}
+function inrK(n){n=n||0;if(n>=1e7)return "₹"+(n/1e7).toFixed(1)+"Cr";if(n>=1e5)return "₹"+(n/1e5).toFixed(1)+"L";if(n>=1e3)return "₹"+(n/1e3).toFixed(1)+"k";return "₹"+Math.round(n)}
+function prodKey(s){
+  return String(s||"").toLowerCase()
+    .replace(/lolipop/g,"lollipop").replace(/sign\s*board/g,"signboard").replace(/roll[\s-]*up/g,"rollup")
+    .replace(/(\d)\s*(?:"|″|''|inch|in\b)?\s*[x×*]\s*(\d)/g,"$1x$2")
+    .replace(/feet|ft\.?/g,"ft").replace(/[^a-z0-9]/g,"");
 }
 
-function addDays(s,n){var d=new Date(s+"T00:00:00Z");d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)}
-function dowOf(s){var d=new Date(s+"T00:00:00Z").getUTCDay();return (d+6)%7}
-function niceDate(s){var p=s.split("-");return p[2]+"-"+p[1]+"-"+p[0]}
-function mask(n){return SL_CONFIG.SHOW_NUMBERS?n:n.slice(0,4)+"XXXX"+n.slice(-2)}
+/* ---------- LEADS data ---------- */
+function leadsFromRows(rows){
+  rows=nonBlank(rows);
+  if(!rows.length)return [];
+  var ix=classify(rows[0],LEAD_RULES);
+  if(ix.num!==undefined&&(ix.ts!==undefined||ix.tm!==undefined)){
+    return rows.slice(1).map(function(r){
+      var ts=ix.ts!==undefined?String(r[ix.ts]||"").trim():"";
+      if(ix.tm!==undefined&&r[ix.tm]&&!/\d:\d\d/.test(ts))ts=(ts+" "+String(r[ix.tm]).trim()).trim();
+      return {num:r[ix.num],name:ix.name!==undefined?r[ix.name]:"",ts:ts,src:ix.src!==undefined?clean(r[ix.src]):""};
+    });
+  }
+  return rows.map(function(r){var o={num:"",name:"",ts:""};
+    r.forEach(function(c){c=String(c||"").trim();if(!c)return;
+      if(!o.ts&&parseTS(c))o.ts=c;
+      else if(!o.num&&(isSci(c)||(/^\+?[\d\s\-()]{8,20}$/.test(c)&&digits(c).length>=8)))o.num=c;
+      else if(!o.name&&/[a-z\u0900-\u097F]/i.test(c))o.name=c;});
+    return o;});
+}
+function buildLeads(raw){
+  var map={},all=[],cnt={},bad=0,sci=0;
+  raw.forEach(function(r){
+    var n=String(r.num||"").trim();
+    if(!n&&!r.ts)return;
+    if(isSci(n)){sci++;return}
+    var k=key(n);if(!k){bad++;return}
+    if(OWNK[k])return;
+    var p=parseTS(r.ts);if(!p){bad++;return}
+    var pt=parts(p.d),nm=clean(r.name);
+    var o={k:k,num:digits(n),name:nm,src:r.src||"",t:p.d,day:pt.day,hr:p.hasT?pt.hr:null,dow:pt.dow,time:p.hasT?pt.time:"-"};
+    cnt[k]=(cnt[k]||0)+1;
+    if(C.UNIQUE_LEADS){if(!map[k]||o.t<map[k].t)map[k]=o}else all.push(o);
+  });
+  if(C.UNIQUE_LEADS)for(var k in map)all.push(map[k]);
+  all.sort(function(a,b){return a.t-b.t});
+  info.bad=bad;info.sci=sci;info.repeat=Object.keys(cnt).filter(function(k){return cnt[k]>1}).length;
+  return all;
+}
 
-function render(){
+/* ---------- ORDERS data ---------- */
+var ORDER_RULES=[
+  ["skip",/updated|modified/],
+  ["dispatchOn",/dispatch(ed)?\s*(date|on|kab)|ship(ped)?\s*(date|on)/],
+  ["deliveredOn",/deliver(y|ed)\s*(date|on|kab)|delivered/],
+  ["payDate",/(payment|paid|received|recieved)\s*(date|on|kab)|paid on/],
+  ["address",/address|pata/],
+  ["pending",/pending|due|balance|baaki/],
+  ["purchase",/purchase|cost price|buying|kharid|kharcha|^cost$|vendor/],
+  ["shipCost",/(porter|courier|delivery|shipping|transport).*(cost|kharcha|paid amount)|(porter|courier).*(charge|amount)|our delivery/],
+  ["shipBy",/paid by|kisne|kis ne|who paid|(porter|delivery|courier).*\bby\b/],
+  ["rate",/rate|price|per ?pc|unit/],
+  ["qty",/qty|quantity|pcs|nos/],
+  ["delivery",/delivery|courier|shipping|porter|transport/],
+  ["total",/total|amount|bill|grand|value/],
+  ["gst",/gst|tax/],
+  ["company",/company|firm|business|brand|shop/],
+  ["name",/client|customer|name|naam|party/],
+  ["num",NUM_RX],
+  ["date",/date|^when|order on|^day$/],
+  ["source",/source|lead|platform|^from/],
+  ["payment",/payment|bank|mode|paid|upi/],
+  ["status",/status|stage|progress/],
+  ["product",/product|item|service|work|order/]
+];
+function delivInfo(t){
+  var s=clean(t),l=s.toLowerCase(),n=num(s);
+  if(!s)return {kind:"none",d:0,label:"-"};
+  if(/client|customer|party|by them/.test(l))return {kind:"client",d:0,label:"By client"};
+  if(/pick\s*-?\s*up|itself|self/.test(l))return {kind:"pickup",d:0,label:"Pickup"};
+  if(/by sir|by us|own|hamari|khud/.test(l))return {kind:"own",d:n||0,label:"Khud delivery"};
+  if(n!=null&&n>0)return {kind:"charged",d:n,label:inr(n)+(/surface/.test(l)?" (Surface)":"")};
+  return {kind:"other",d:0,label:/extra|applicable|baad/.test(l)?"Extra / baad mein":s};
+}
+function gstWord(s){
+  s=String(s||"").toLowerCase();
+  if(/without\s*gst|w\/?o\s*gst|excl|bina\s*gst|non[\s-]?gst|^\s*(no|n|nahi|0%?)\s*$/.test(s))return "no";
+  if(/with\s*gst|incl|\+\s*gst|gst\s*(incl|added|ke saath)|^\s*(yes|y|haan|ha|18%?)\s*$/.test(s))return "yes";
+  return "";
+}
+function computeOrder(o){
+  var T=o.T,base=o.base,d=o.dv.d,word=o.gstHint,tol,best=null,why="";
+  o.flags=[];
+  if((T==null||T===0)&&base!=null){T=base+d;o.flags.push("Total khali tha — Rate × Qty se lagaya");why="calc"}
+  if(T==null){T=0;o.flags.push("Amount khali")}
+  o.Tcalc=T;
+  if(o.gstAmt!=null&&o.gstAmt>0){        // sheet mein GST amount column ho
+    o.gst=o.gstAmt;o.del=d&&T>d?d:0;o.mode="with";why="col";
+  }else if(base!=null&&T>0&&!why){
+    var c=[{g:0,dl:d,t:base+d,m:"without"},{g:base*GR,dl:d,t:base*(1+GR)+d,m:"with"}];
+    if(d){c.push({g:(base+d)*GR,dl:d,t:(base+d)*(1+GR),m:"with"});c.push({g:base*GR,dl:0,t:base*(1+GR),m:"with"});c.push({g:0,dl:0,t:base,m:"without"})}
+    if(word)c=c.filter(function(x){return word==="yes"?x.m==="with":x.m==="without"});
+    tol=Math.max(3,T*0.01);
+    c.forEach(function(x){var df=Math.abs(x.t-T);if(df<=tol&&(!best||df<best.df)){best=x;best.df=df}});
+    if(best){o.gst=best.g;o.del=best.dl;o.mode=best.m;why="match"}
+  }else if(why==="calc"){o.gst=0;o.del=d;o.mode="without"}
+  if(!o.mode){
+    if(word==="yes"){o.gst=(T-(d&&T>d?d:0))*GR/(1+GR);o.del=d&&T>d?d:0;o.mode="with";why="word"}
+    else if(base!=null&&T>base+d&&(word==="no"||/design|extra|charges/i.test(o.Ttext))){o.gst=0;o.del=d;o.mode="without";why="extra"}
+    else{o.gst=0;o.del=d&&T>d?d:0;o.mode=word==="no"?"without":"check";why=word==="no"?"word":"nomatch"}
+  }
+  o.why=why;
+  o.extra=base!=null?Math.max(0,T-o.gst-o.del-base):0;
+  if(o.extra<1)o.extra=0;
+  o.net=Math.max(0,T-o.gst-o.del);
+  if(o.mode==="check"&&base==null)o.flags.push("Rate / Qty se hisaab nahi ban paya.");
+  return calcProfit(o);
+}
+function calcProfit(o){   // Profit = asli sale + delivery liya − purchase − porter (jo humne diya)
+  o.ourShip=o.del;   // porter ka asli kharcha na likha ho to: jitna delivery liya, utna courier ko gaya
+  if(o.shipCost!=null){
+    var byClient=o.shipBy?/client|customer|party/i.test(o.shipBy):o.dv.kind==="client";
+    o.ourShip=byClient?0:o.shipCost;
+  }
+  o.profit=o.purchase!=null?o.net+o.del-o.purchase-o.ourShip:null;
+  return o;
+}
+var OCOL={};
+function ordersFromRows(rows){
+  var h=0;while(h<rows.length&&isBlank(rows[h]))h++;
+  if(h>=rows.length)return [];
+  var ix=classify(rows[h],ORDER_RULES);
+  if(ix.num===undefined&&ix.name===undefined)throw new Error("Order sheet mein 'Contact Number' / 'Client Name' column nahi mila");
+  OCOL=ix;
+  function g(r,k){return ix[k]===undefined?"":String(r[ix[k]]==null?"":r[ix[k]]).trim()}
+  var out=[];
+  rows.slice(h+1).forEach(function(r,i){
+    if(isBlank(r))return;
+    var name=clean(g(r,"name")),company=clean(g(r,"company")),numS=g(r,"num"),prod=g(r,"product"),tt=g(r,"total");
+    if(!name&&!company&&!digits(numS)&&!clean(prod)&&!clean(tt))return;   // khali / sirf status wali row
+    var plist=productList(prod).map(function(x){return clean(x).replace(/[\s,;:+\-]+$/,"")}).filter(Boolean);
+    var rl=lines(g(r,"rate")),ql=qtyList(g(r,"qty"));
+    var rates=rl.map(lineNum),qtys=ql.map(lineNum),base=null,items=[];
+    if(rates.length&&!qtys.length&&rates.length===1)qtys=[1];
+    if(rates.length&&rates.length===qtys.length&&rates.every(function(x){return x!=null})&&qtys.every(function(x){return x!=null})){
+      base=0;rates.forEach(function(rt,j){base+=rt*qtys[j]});
+      if(rates.length===plist.length)items=plist.map(function(p,j){return {name:p,qty:qtys[j],amt:rates[j]*qtys[j]}});
+    }
+    if(!items.length)items=plist.map(function(p,j){return {name:p,qty:plist.length===qtys.length?qtys[j]:(plist.length===1&&qtys.length===1?qtys[0]:null),amt:null}});
+    var gcol=g(r,"gst"),gn=num(gcol),gAmt=null;
+    if(gcol&&gn!=null&&gn>28&&!/%/.test(gcol))gAmt=gn;
+    var pend=g(r,"pending");
+    var o={i:i,row:h+2+i,day:dayOnly(g(r,"date")),rawDate:clean(g(r,"date")),
+      dispatchOn:dayOnly(g(r,"dispatchOn")),deliveredOn:dayOnly(g(r,"deliveredOn")),payDate:dayOnly(g(r,"payDate")),name:name,company:company,
+      num:digits(numS),k:key(numS),address:clean(g(r,"address")),
+      products:plist,items:items,rateText:g(r,"rate"),qtyText:g(r,"qty"),
+      dv:delivInfo(g(r,"delivery")),deliveryText:clean(g(r,"delivery")),
+      T:num(tt),Ttext:tt,base:base,
+      gstHint:gstWord(gcol)||gstWord(tt),gstAmt:gAmt,
+      source:clean(g(r,"source")),payment:clean(g(r,"payment")),
+      pendingText:clean(pend),pending:/^[₹\s\d,.\/-]*$/.test(pend)?(num(pend)||0):0,
+      status:clean(g(r,"status"))||"—",
+      purchaseCol:ix.purchase!==undefined&&clean(g(r,"purchase"))?num(g(r,"purchase")):null,
+      purchase:null,
+      shipCost:ix.shipCost!==undefined&&clean(g(r,"shipCost"))?num(g(r,"shipCost")):null,
+      shipBy:clean(g(r,"shipBy"))};
+    o.purchase=o.purchaseCol;
+    o.geo=geoOf(o.address);
+    out.push(computeOrder(o));
+  });
+  return out;
+}
+function stCls(s){
+  s=String(s||"").toLowerCase();
+  if(/deliver|complete|done|closed/.test(s))return "conv";
+  if(/dispatch|ship|transit|courier|sent/.test(s))return "disp";
+  if(/print|process|making|design|production|pending|hold|confirm/.test(s))return "fu";
+  if(/cancel|return|reject|refund/.test(s))return "not";
+  return "pen";
+}
+
+/* ---------- EXTRA sheets data ---------- */
+function extraFromRows(rows,cfg){
+  rows=nonBlank(rows);
+  if(!rows.length)return {hdr:[],ni:-1,rows:[],map:{}};
+  var hdr=rows[0].map(function(h){return String(h||"").trim()}),ni=-1;
+  if(cfg.numberColumn){var want=String(cfg.numberColumn).toLowerCase().trim();
+    hdr.forEach(function(h,i){if(ni<0&&h.toLowerCase()===want)ni=i})}
+  if(ni<0)hdr.forEach(function(h,i){var l=h.toLowerCase();if(ni<0&&NUM_RX.test(l)&&!/name|naam/.test(l))ni=i});
+  if(ni<0)throw new Error("'Number' column nahi mila");
+  var out=[],map={};
+  rows.slice(1).forEach(function(r){
+    var o={k:key(r[ni]),cells:hdr.map(function(_,i){return String(r[i]==null?"":r[i]).trim()})};
+    out.push(o);if(o.k)(map[o.k]=map[o.k]||[]).push(o);
+  });
+  return {hdr:hdr,ni:ni,rows:out,map:map};
+}
+
+/* ---------- Common bits ---------- */
+function kpi(v,l,s,cls){return '<div class="card kpi'+(cls?" "+cls:"")+'"><div class="v">'+v+'</div><div class="l">'+l+'</div><div class="s">'+s+'</div></div>'}
+function orderPill(k){
+  var o=k&&OMAP[k];
+  return o?'<span class="st conv" title="'+inr(o.net)+' asli sale">Order ('+o.n+')</span>':'<span class="st pen">No order</span>';
+}
+function sheetTags(k){
+  return extras.map(function(x){return x.data&&x.data.map[k]?'<span class="tag">'+esc(x.cfg.name)+'</span>':""}).join("");
+}
+function bars(id,vals,labels,show){
+  var mx=Math.max.apply(null,vals.concat(0)),mn=Math.min.apply(null,vals.concat(mx));
+  $(id).innerHTML=vals.map(function(v,i){
+    var h=mx?Math.max(v/mx*100,v?2:0):0;
+    var c=vals.length>1&&mx>0&&v===mx?" max":(vals.length>1&&mx>0&&v===mn?" min":"");
+    return '<div class="col"><div class="n">'+(show?show[i]:v)+'</div><div class="b'+c+'" style="height:'+h+'%"></div><div class="x">'+labels[i]+'</div></div>';
+  }).join("");
+}
+function hb(label,val,pct,cls){
+  return '<div class="hb"><span title="'+esc(label)+'">'+esc(label)+'</span><div class="tr"><i class="'+(cls||"")+'" style="width:'+Math.min(100,pct||0)+'%"></i></div><b>'+val+'</b></div>';
+}
+function groupList(list,keyFn,valFn){
+  var m={};
+  list.forEach(function(o){var k=keyFn(o)||"(khali)";var x=m[k]=m[k]||{k:k,n:0,v:0};x.n++;x.v+=valFn?valFn(o):0});
+  return Object.keys(m).map(function(k){return m[k]}).sort(function(a,b){return b.n-a.n||b.v-a.v});
+}
+
+/* ======================= LEADS TAB ======================= */
+function renderLeads(){
+  if(!leads.length){
+    ["sl-kpis","sl-dow","sl-hr","sl-daily","sl-rows"].forEach(function(id){$(id).innerHTML=""});
+    $("sl-search").style.display="none";days=[];view=[];
+    $("sl-status").textContent=!C.LEADS_CSV_URL?"Leads sheet ka URL abhi nahi daala gaya":(loadedOnce?"Leads sheet mein abhi koi lead nahi mili":"Loading…");
+    return;
+  }
+  var today=parts(new Date()).day,last=leads[leads.length-1].day;
   var from=$("sl-from").value,to=$("sl-to").value;
-  view=leads.filter(function(l){return (!from||l.day>=from)&&(!to||l.day<=to)});
-  if(!leads.length){$("sl-kpis").innerHTML="";$("sl-status").textContent="Abhi koi data nahi hai. SHEET_CSV_URL daalo ya SL_DATA mein data paste karo.";return}
-  var s=from||leads[0].day, e=to||leads[leads.length-1].day;
+  var s=from||leads[0].day,e=to||(last>today?last:today);
   if(e<s){var t=s;s=e;e=t}
+  view=leads.filter(function(l){return l.day>=s&&l.day<=e});
   var byDay={};view.forEach(function(l){(byDay[l.day]=byDay[l.day]||[]).push(l)});
   days=[];
-  for(var d=s;d<=e;d=addDays(d,1)){days.push({day:d,dow:dowOf(d),list:byDay[d]||[]})}
+  for(var d=s,g=0;d<=e&&g<4000;d=addDays(d,1),g++)days.push({day:d,dow:dowOf(d),list:byDay[d]||[]});
   var total=view.length,nd=days.length||1;
   var best=days.reduce(function(a,b){return b.list.length>a.list.length?b:a},days[0]);
   var worst=days.reduce(function(a,b){return b.list.length<a.list.length?b:a},days[0]);
   var ds=[0,0,0,0,0,0,0],dc=[0,0,0,0,0,0,0];
   days.forEach(function(x){ds[x.dow]+=x.list.length;dc[x.dow]++});
   var da=ds.map(function(v,i){return dc[i]?v/dc[i]:0});
-  var hs=new Array(24).fill(0);view.forEach(function(l){hs[l.hr]++});
-  var bd=da.indexOf(Math.max.apply(null,da)), wd=da.indexOf(Math.min.apply(null,da));
-  var ph=hs.indexOf(Math.max.apply(null,hs));
-  var last=leads[leads.length-1];
-  var todayKey=parts(new Date()).day;
-  var todayN=(leads.filter(function(l){return l.day===todayKey})).length;
+  var hs=new Array(24).fill(0);view.forEach(function(l){if(l.hr!=null)hs[l.hr]++});
+  var bd=da.indexOf(Math.max.apply(null,da)),wd=da.indexOf(Math.min.apply(null,da));
+  var hmax=Math.max.apply(null,hs),ph=hs.indexOf(hmax);
+  var todayN=leads.filter(function(l){return l.day===today}).length;
+  var conv=view.filter(function(l){return OMAP[l.k]}).length;
 
   $("sl-kpis").innerHTML=
-    kpi(total,"Total leads",niceDate(s)+" se "+niceDate(e))+
+    kpi(total,"Total leads"+(C.UNIQUE_LEADS?" (unique)":""),niceDate(s)+" se "+niceDate(e))+
     kpi((total/nd).toFixed(1),"Average leads / din",nd+" din")+
-    kpi(todayN,"Aaj ki leads",niceDate(todayKey))+
+    kpi(todayN,"Aaj ki leads",niceDate(today))+
     kpi(best.list.length,"Sabse zyada (ek din)",niceDate(best.day)+" ("+DOW[best.dow]+")")+
     kpi(worst.list.length,"Sabse kam (ek din)",niceDate(worst.day)+" ("+DOW[worst.dow]+")")+
     kpi(DOW[bd],"Best din (avg)",da[bd].toFixed(1)+" leads/din")+
     kpi(DOW[wd],"Sabse kam din (avg)",da[wd].toFixed(1)+" leads/din")+
-    kpi(ph+":00–"+(ph+1)+":00","Peak time (IST)",hs[ph]+" leads");
+    kpi(hmax?pad(ph)+":00–"+pad((ph+1)%24)+":00":"-","Peak time (IST)",hmax+" leads")+
+    kpi(conv,"Order mile (is range)",total?(conv/total*100).toFixed(1)+"% leads ka order aaya":"-")+
+    kpi(info.repeat,"Repeat numbers","ek se zyada baar aaye");
 
   bars("sl-dow",da.map(function(v){return +v.toFixed(1)}),DOW);
   bars("sl-hr",hs,hs.map(function(_,i){return i}));
 
-  var mx=Math.max.apply(null,days.map(function(x){return x.list.length})),mn=Math.min.apply(null,days.map(function(x){return x.list.length}));
+  var cnts=days.map(function(x){return x.list.length});
+  var mx=Math.max.apply(null,cnts),mn=Math.min.apply(null,cnts);
   $("sl-daily").innerHTML=days.map(function(x){
     var n=x.list.length,h=mx?Math.max(n/mx*100,n?2:1):1;
-    var c="d"+(n===mx&&mx>0?" max":n===mn?" min":x.dow===6?" sun":"");
+    var c="d"+(mx>0&&n===mx?" max":(mx>0&&n===mn?" min":(x.dow===6?" sun":"")));
     return '<div class="'+c+'" style="height:'+h+'%" data-day="'+x.day+'" title="'+niceDate(x.day)+" ("+DOW[x.dow]+"): "+n+' leads"></div>';
   }).join("");
 
   drawRows();
-  $("sl-status").textContent="Last lead: "+niceDate(last.day)+" "+last.time+" IST  •  Page update: "+new Date().toLocaleTimeString("en-IN")+(SL_CONFIG.SHEET_CSV_URL?"  •  Google Sheet se live":"  •  Built-in data");
   doSearch();
-}
-function kpi(v,l,s){return '<div class="card kpi"><div class="v">'+v+'</div><div class="l">'+l+'</div><div class="s">'+s+'</div></div>'}
-function bars(id,vals,labels){
-  var mx=Math.max.apply(null,vals),mn=Math.min.apply(null,vals);
-  $(id).innerHTML=vals.map(function(v,i){
-    var h=mx?Math.max(v/mx*100,v?2:0):0;
-    var c="b"+(v===mx&&mx>0?" max":v===mn?" min":"");
-    return '<div class="col"><div class="n">'+v+'</div><div class="b '+c.replace("b ","")+'" style="height:'+h+'%"></div><div class="x">'+labels[i]+'</div></div>';
-  }).join("");
 }
 function drawRows(){
   var mode=$("sl-sort").value,a=days.slice();
@@ -291,53 +850,689 @@ function drawRows(){
     return '<tr class="day" data-day="'+x.day+'"><td>'+niceDate(x.day)+'</td><td>'+DOW[x.dow]+'</td><td><span class="pill'+(n?"":" z")+'">'+n+'</span></td><td>'+(n?x.list[0].time:"-")+'</td><td>'+(n?x.list[n-1].time:"-")+'</td></tr>';
   }).join("");
 }
+function leadTable(list,withDate){
+  return '<table><thead><tr>'+(withDate?'<th>Date</th>':'<th>#</th>')+'<th>Time (IST)</th><th>Naam</th><th>Number</th><th>Order</th></tr></thead><tbody>'+
+    list.map(function(l,i){return '<tr><td>'+(withDate?niceDate(l.day):(i+1))+'</td><td>'+l.time+'</td><td>'+(esc(l.name)||"-")+'</td><td>'+mask(l.num)+'</td><td>'+orderPill(l.k)+sheetTags(l.k)+'</td></tr>'}).join("")+
+    '</tbody></table>';
+}
 function toggle(day){
-  var tb=$("sl-rows"),tr=tb.querySelector('tr.day[data-day="'+day+'"]');
+  var tr=$("sl-rows").querySelector('tr.day[data-day="'+day+'"]');
   if(!tr)return;
   var nx=tr.nextElementSibling;
   if(nx&&nx.classList.contains("det")){nx.remove();return}
-  var x=days.filter(function(d){return d.day===day})[0];
-  var html=x.list.length?'<table><thead><tr><th>#</th><th>Time (IST)</th><th>Naam</th><th>Number</th></tr></thead><tbody>'+x.list.map(function(l,i){return '<tr><td>'+(i+1)+'</td><td>'+l.time+'</td><td>'+esc(l.name)+'</td><td>'+mask(l.num)+'</td></tr>'}).join("")+'</tbody></table>':'<div style="padding:10px;color:#9aa4c7">Is din koi lead nahi aayi.</div>';
+  var x=days.filter(function(d){return d.day===day})[0];if(!x)return;
+  var html=x.list.length?leadTable(x.list,false):'<div style="padding:10px;color:#9aa4c7">Is din koi lead nahi aayi.</div>';
   var d=document.createElement("tr");d.className="det";d.innerHTML='<td colspan="5"><div class="det-in">'+html+'</div></td>';
   tr.parentNode.insertBefore(d,tr.nextSibling);
 }
 function doSearch(){
   var q=$("sl-q").value.trim().toLowerCase(),box=$("sl-search");
   if(!q){box.style.display="none";return}
-  var r=view.filter(function(l){return l.name.toLowerCase().indexOf(q)>-1||l.num.indexOf(q.replace(/\D/g,"")||"\u0000")>-1});
+  var qd=q.replace(/\D/g,"");
+  var r=view.filter(function(l){return l.name.toLowerCase().indexOf(q)>-1||(qd&&l.num.indexOf(qd)>-1)});
   box.style.display="block";
-  box.innerHTML='<h2>Search: '+r.length+' mile</h2>'+(r.length?'<div class="tw" style="max-height:260px"><table><thead><tr><th>Date</th><th>Time</th><th>Naam</th><th>Number</th></tr></thead><tbody>'+r.slice(0,300).map(function(l){return '<tr><td>'+niceDate(l.day)+'</td><td>'+l.time+'</td><td>'+esc(l.name)+'</td><td>'+mask(l.num)+'</td></tr>'}).join("")+'</tbody></table></div>':'');
+  box.innerHTML='<h2>Search: '+r.length+' mile</h2>'+(r.length?'<div class="tw" style="max-height:260px">'+leadTable(r.slice(0,300),true)+'</div>':'');
 }
 function setRange(n){
-  if(!leads.length)return;
-  var e=leads[leads.length-1].day;
-  $("sl-to").value=e; $("sl-from").value=n?addDays(e,-(n-1)):""; if(!n){$("sl-to").value=""}
-  render();
+  if(!n){$("sl-from").value="";$("sl-to").value=""}
+  else{var e=parts(new Date()).day;$("sl-to").value=e;$("sl-from").value=addDays(e,-(n-1))}
+  renderLeads();
 }
-function load(){
-  $("sl-err").textContent="";
-  var done=function(rows){leads=build(rows);
-    if(!$("sl-from").value&&!$("sl-to").value&&leads.length){$("sl-from").min=leads[0].day;}
-    render();};
-  if(!SL_CONFIG.SHEET_CSV_URL){done(SL_DATA);return}
-  fetch(SL_CONFIG.SHEET_CSV_URL+(SL_CONFIG.SHEET_CSV_URL.indexOf("?")>-1?"&":"?")+"t="+Date.now())
-    .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.text()})
-    .then(function(t){done(rowsFromCSV(t))})
-    .catch(function(err){$("sl-err").textContent="Google Sheet load nahi hui ("+err.message+"). Built-in data dikh raha hai.";done(SL_DATA)});
+
+/* ======================= SALES TAB (Orders) ======================= */
+function fillSelect(id,vals){
+  var s=$(id),cur=s.value;
+  s.innerHTML='<option value="">Sab</option>'+vals.map(function(v){return '<option>'+esc(v)+'</option>'}).join("");
+  if(vals.indexOf(cur)>-1)s.value=cur;
 }
-["sl-from","sl-to"].forEach(function(id){$(id).addEventListener("change",render)});
+function renderSales(){
+  if(!orders.length){
+    ["sa-kpis","sa-month","sa-split","sa-prod","sa-srcs","sa-gsts","sa-pay","sa-del","sa-head"].forEach(function(id){$(id).innerHTML=""});
+    $("sa-profit").style.display="none";
+    $("sa-title").textContent="Orders";
+    $("sa-rows").innerHTML='<tr><td class="mu" style="padding:16px">'+(!C.ORDERS_CSV_URL?"ORDERS_CSV_URL abhi khali hai — code ke upar SL_CONFIG mein Order sheet ka link daalo.":(loadedOnce?"Order sheet mein koi order nahi mila.":"Loading…"))+'</td></tr>';
+    $("sa-note").textContent="";$("sa-cmp").innerHTML="";
+    return;
+  }
+  renderCompare();
+  var f=$("sa-from").value,t=$("sa-to").value,st=$("sa-status").value,gs=$("sa-gst").value,src=$("sa-src").value;
+  var q=$("sa-q").value.trim().toLowerCase(),qd=q.replace(/\D/g,"");
+  if(f&&t&&t<f){var x=f;f=t;t=x}
+  var base=orders.filter(function(o){
+    if((f||t)&&!o.day)return false;
+    return (!f||o.day>=f)&&(!t||o.day<=t);
+  });
+  // KPIs + charts sirf date filter par; table par baaki filters bhi
+  var tot=base.length,bill=0,net=0,gst=0,del=0,pend=0,pendN=0,gstN=0,clientN=0,chk=0,fromLead=0,clients={};
+  base.forEach(function(o){
+    bill+=o.Tcalc;net+=o.net;gst+=o.gst;del+=o.del;
+    if(o.pending>0){pend+=o.pending;pendN++}
+    if(o.mode==="with")gstN++;if(o.mode==="check")chk++;
+    if(o.dv.kind==="client")clientN++;
+    if(o.k&&LMAP[o.k])fromLead++;
+    clients[o.k||(o.name+"|"+o.company).toLowerCase()]=1;
+  });
+  var nClients=Object.keys(clients).length;
+  var leadOrdered={};orders.forEach(function(o){if(o.k&&LMAP[o.k])leadOrdered[o.k]=1});
+  var nLO=Object.keys(leadOrdered).length;
+  $("sa-kpis").innerHTML=
+    kpi(tot,"Total orders",nClients+" clients"+(f||t?" • is range mein":""))+
+    kpi(inr(bill),"Total billing","sheet ka Total Amount")+
+    kpi(inr(net),"Asli sale","bina GST aur delivery ke","good")+
+    kpi(inr(gst),"GST ("+Math.round(GR*100)+"%)",gstN+" orders GST wale")+
+    kpi(inr(del),"Delivery (client se liya)","sale mein count nahi • "+clientN+" porter by client")+
+    kpi(tot?inr(net/tot):"-","Average order","asli sale / order")+
+    kpi(inr(pend),"Pending amount",pendN+" orders mein baaki",pend>0?"warn":"")+
+    kpi(fromLead,"Leads se aaye orders",leads.length?nLO+" leads ka order • "+(nLO/leads.length*100).toFixed(1)+"% conversion":"Leads sheet jodo")+
+    (chk?kpi(chk,"Check karo","GST / amount clear nahi","warn"):"");
+
+  // Profit (sirf jab Purchase / Porter cost column ho)
+  var pb=$("sa-profit");
+  if(hasCost){
+    var withP=base.filter(function(o){return o.profit!=null});
+    var pur=0,ship=0,prof=0,pnet=0;
+    withP.forEach(function(o){pur+=o.purchase;ship+=o.ourShip;prof+=o.profit;pnet+=o.net+o.del});
+    pb.style.display="";
+    pb.innerHTML=kpi(inr(pur),"Purchase (kharcha)",withP.length+" orders mein bhara")+
+      kpi(inr(ship),"Porter / delivery (humne diya)",OCOL.shipCost!==undefined?"client wala count nahi":"= jo delivery client se liya")+
+      kpi(inr(prof),"Profit","asli sale + delivery liya − purchase − porter",prof>=0?"good":"warn")+
+      kpi(pnet?(prof/pnet*100).toFixed(1)+"%":"-","Margin","profit / (sale + delivery)")+
+      (tot-withP.length?kpi(tot-withP.length,"Purchase khali","in orders ka profit nahi gina","warn"):"");
+  }else{pb.style.display="none";pb.innerHTML=""}
+
+  // Mahine ke hisaab se
+  var mm={};base.forEach(function(o){if(!o.day)return;var k=o.day.slice(0,7);(mm[k]=mm[k]||{v:0,n:0});mm[k].v+=o.net;mm[k].n++});
+  var mk=Object.keys(mm).sort();
+  if(mk.length){
+    var all=[];for(var m=mk[0],g2=0;m<=mk[mk.length-1]&&g2<120;g2++){all.push(m);var y=+m.slice(0,4),mo=+m.slice(5);mo++;if(mo>12){mo=1;y++}m=y+"-"+pad(mo)}
+    bars("sa-month",all.map(function(k){return mm[k]?mm[k].v:0}),all.map(function(k){return MNAME[+k.slice(5)-1]+" "+k.slice(2,4)}),
+      all.map(function(k){return mm[k]?inrK(mm[k].v)+" · "+mm[k].n:"0"}));
+    $("sa-month").style.minWidth=Math.max(0,all.length*64)+"px";
+  }else $("sa-month").innerHTML='<div class="mu">Orders mein date nahi hai.</div>';
+
+  var sg=groupList(base,function(o){return o.status});
+  $("sa-split").innerHTML=sg.map(function(x){return hb(x.k,x.n+' <span class="mu">('+(tot?Math.round(x.n/tot*100):0)+'%)</span>',tot?x.n/tot*100:0,stCls(x.k))}).join("");
+
+  var pm={};
+  base.forEach(function(o){
+    var single=o.items.length===1;
+    o.items.forEach(function(it){
+      var k=prodKey(it.name);if(!k)return;
+      var p=pm[k]=pm[k]||{names:{},n:0,q:0,v:0};
+      p.names[it.name]=(p.names[it.name]||0)+1;p.n++;
+      if(it.qty)p.q+=it.qty;
+      p.v+=single?o.net:(it.amt||0);
+    });
+  });
+  var pl=Object.keys(pm).map(function(k){var p=pm[k];p.name=Object.keys(p.names).sort(function(a,b){return p.names[b]-p.names[a]})[0];return p})
+    .sort(function(a,b){return b.n-a.n||b.v-a.v}).slice(0,8);
+  var pmx=pl.length?pl[0].n:0;
+  $("sa-prod").innerHTML=pl.length?pl.map(function(p){return hb(p.name,p.n+' <span class="mu">· '+inrK(p.v)+'</span>',pmx?p.n/pmx*100:0)}).join(""):'<div class="mu">Product data nahi hai.</div>';
+
+  var srcg=groupList(base,function(o){return o.source},function(o){return o.net});
+  var smx=srcg.length?srcg[0].n:0;
+  $("sa-srcs").innerHTML=srcg.map(function(x){return hb(x.k,x.n+' <span class="mu">· '+inrK(x.v)+'</span>',smx?x.n/smx*100:0)}).join("");
+
+  var gl={with:"GST ke saath",without:"Bina GST",check:"Check karo"},gc={with:"conv",without:"disp",check:"fu"};
+  $("sa-gsts").innerHTML=["with","without","check"].map(function(k){
+    var l=base.filter(function(o){return o.mode===k});if(!l.length&&k==="check")return "";
+    var v=l.reduce(function(a,o){return a+o.net},0);
+    return hb(gl[k],l.length+' <span class="mu">· '+inrK(v)+'</span>',tot?l.length/tot*100:0,gc[k]);
+  }).join("");
+
+  var payg=groupList(base,function(o){return o.payment},function(o){return o.Tcalc});
+  var pmx2=payg.length?payg[0].n:0;
+  $("sa-pay").innerHTML=payg.map(function(x){return hb(x.k,x.n+' <span class="mu">· '+inrK(x.v)+'</span>',pmx2?x.n/pmx2*100:0)}).join("");
+
+  var dl={client:"Porter (by client)",charged:"Delivery charge liya",pickup:"Pickup",own:"Khud delivery",other:"Extra / baad mein",none:"Khali"};
+  var dc={client:"pen",charged:"disp",pickup:"conv",own:"conv",other:"fu",none:"pen"};
+  var dg=groupList(base,function(o){return o.dv.kind},function(o){return o.del});
+  $("sa-del").innerHTML=dg.map(function(x){return hb(dl[x.k]||x.k,x.n+(x.v?' <span class="mu">· '+inrK(x.v)+'</span>':''),tot?x.n/tot*100:0,dc[x.k])}).join("");
+
+  // Table
+  oview=base.filter(function(o){
+    if(st&&o.status!==st)return false;
+    if(gs&&o.mode!==gs)return false;
+    if(src&&o.source!==src)return false;
+    if(!q)return true;
+    var hay=(o.name+" "+o.company+" "+o.products.join(" ")+" "+o.address+" "+o.payment).toLowerCase();
+    return hay.indexOf(q)>-1||(qd.length>=3&&o.num.indexOf(qd)>-1);
+  }).sort(function(a,b){return (b.day||"").localeCompare(a.day||"")||b.i-a.i});
+  var cols=hasCost?13:12;
+  $("sa-head").innerHTML='<tr><th>Date</th><th>Client</th><th>Product</th><th>Qty</th><th class="r">Rate × Qty</th><th>Delivery</th><th>GST</th><th class="r">Total</th><th class="r">Asli sale</th>'+(hasCost?'<th class="r">Profit</th>':'')+'<th>Payment</th><th>Status</th><th>Lead</th></tr>';
+  var sum={T:0,n:0};oview.forEach(function(o){sum.T+=o.Tcalc;sum.n+=o.net});
+  $("sa-title").textContent="Orders ("+oview.length+") • Total "+inr(sum.T)+" • Asli sale "+inr(sum.n);
+  $("sa-rows").innerHTML=oview.slice(0,400).map(function(o,i){
+    var gstCell=o.mode==="with"?'<span class="st conv">GST '+inr(o.gst)+'</span>':o.mode==="without"?'<span class="st disp">Bina GST</span>':'<span class="st fu">Check karo</span>';
+    var qty=o.items.map(function(it){return it.qty!=null?it.qty:""}).filter(String).join(", ")||esc(clean(o.qtyText))||"-";
+    var lead=o.k&&LMAP[o.k];
+    return '<tr class="ord" data-i="'+i+'"><td class="nw">'+(o.day?niceDate(o.day):'<span class="mu">'+(esc(o.rawDate)||"Date nahi")+'</span>')+'</td>'+
+      '<td><b>'+(esc(o.name)||"-")+'</b>'+(o.company?'<br><span class="mu">'+esc(o.company)+'</span>':'')+'<br><span class="mu">'+(mask(o.num)||"-")+'</span>'+(o.k&&sheetTags(o.k)?'<br>'+sheetTags(o.k):'')+'</td>'+
+      '<td class="prod">'+(esc(o.products.join("\n"))||"-")+'</td>'+
+      '<td>'+esc(qty)+'</td>'+
+      '<td class="r">'+(o.base!=null?inr(o.base):"-")+'</td>'+
+      '<td>'+esc(o.dv.label)+'</td>'+
+      '<td>'+gstCell+'</td>'+
+      '<td class="r">'+(o.Tcalc?inr(o.Tcalc):"-")+'</td>'+
+      '<td class="r"><b>'+(o.net?inr(o.net):"-")+'</b></td>'+
+      (hasCost?'<td class="r">'+(o.profit!=null?inr(o.profit):'<span class="mu">-</span>')+'</td>':'')+
+      '<td>'+(esc(o.payment)||"-")+(o.pending>0?'<br><span class="st fu">Pending '+inr(o.pending)+'</span>':'')+'</td>'+
+      '<td><span class="st '+stCls(o.status)+'">'+esc(o.status)+'</span></td>'+
+      '<td>'+(lead?'<span class="tag">Lead '+niceDate(lead.day)+'</span>':'<span class="mu">-</span>')+'</td></tr>';
+  }).join("")||'<tr><td colspan="'+cols+'" class="mu" style="padding:16px">Koi order nahi mila.</td></tr>';
+  $("sa-note").textContent=(oview.length>400?"Pehle 400 orders dikh rahe hain — filter use karo.  ":"")+
+    "Row par click = poora hisaab. Asli sale = Total − GST − delivery charge. GST tab maana jata hai jab Total = Rate × Qty + "+Math.round(GR*100)+"% (+ delivery) se match kare, ya Total mein \"with GST\" likha ho.";
+}
+function orderDetail(o){
+  var R=Math.round(GR*100),c=[];
+  if(o.base!=null)c.push("Rate × Qty = "+inr(o.base));
+  if(o.gst)c.push("GST "+R+"% = "+inr(o.gst));
+  if(o.del)c.push("Delivery = "+inr(o.del));
+  if(o.extra)c.push((o.mode==="check"?"Farak (match nahi) = ":"Extra / design = ")+inr(o.extra));
+  c.push("<strong>Total = "+inr(o.Tcalc)+"</strong>");
+  var why={match:"Sheet ke Total se match karke pata chala.",word:"Sheet mein likha hai.",col:"Sheet ke GST column se.",extra:"Total mein extra / design charge hai, GST nahi maana.",calc:"Total khali tha, Rate × Qty se banaya.",nomatch:"Total, Rate × Qty se match nahi hua — sheet check karo. Abhi GST nahi maana."}[o.why]||"";
+  var it=o.items.length>1?o.items.map(function(x){return esc(x.name)+(x.qty!=null?" × "+x.qty:"")+(x.amt!=null?" = "+inr(x.amt):"")}).join("<br>"):"";
+  return '<div class="dgrid">'+
+    '<div><b>Client</b>'+(esc(o.name)||"-")+(o.company?" • "+esc(o.company):"")+'</div>'+
+    '<div><b>Number</b>'+(mask(o.num)||"-")+'</div>'+
+    '<div><b>Lead source</b>'+(esc(o.source)||"-")+'</div>'+
+    '<div><b>Payment</b>'+(esc(o.payment)||"-")+(o.pendingText?" • Pending: "+esc(o.pendingText):"")+'</div>'+
+    '<div><b>Delivery / Porter</b>'+(esc(o.deliveryText)||"-")+(o.dv.kind==="client"?' <span class="mu">(client ne diya — count nahi)</span>':'')+'</div>'+
+    (hasCost?'<div><b>Purchase / Porter (humne diya)</b>'+(o.purchase!=null?inr(o.purchase):"khali")+" • "+inr(o.ourShip)+(o.profit!=null?" • Profit "+inr(o.profit):"")+(o.costNote?'<br><span class="mu">'+esc(o.costNote)+'</span>':'')+'</div>':'')+
+    (o.dispatchOn||o.deliveredOn||o.payDate?'<div><b>Dates</b>'+(o.dispatchOn?"Dispatch "+niceDate(o.dispatchOn)+" ":"")+(o.deliveredOn?"• Delivery "+niceDate(o.deliveredOn)+" ":"")+(o.payDate?"• Payment "+niceDate(o.payDate):"")+'</div>':'')+
+    '<div><b>Sheet row</b>'+o.row+'</div>'+
+    '<div class="full"><b>Address</b>'+(esc(o.address)||"-")+'</div>'+
+    (it?'<div class="full"><b>Items</b>'+it+'</div>':'')+
+    '<div class="full calc"><b>Hisaab</b>'+c.join(" &nbsp;•&nbsp; ")+'<br><span class="mu">'+why+(o.flags.length?" "+esc(o.flags.join(". ")):"")+'</span></div>'+
+    '</div>';
+}
+function toggleOrder(tr){
+  var nx=tr.nextElementSibling;
+  if(nx&&nx.classList.contains("det")){nx.remove();return}
+  var o=oview[+tr.dataset.i];if(!o)return;
+  var d=document.createElement("tr");d.className="det";
+  d.innerHTML='<td colspan="'+(hasCost?13:12)+'">'+orderDetail(o)+'</td>';
+  tr.parentNode.insertBefore(d,tr.nextSibling);
+}
+
+/* ======================= SHEHAR / STATE (address se) ======================= */
+var ST_NAMES=[["Uttarakhand",/uttarakhand|uttrakhand/],["Uttar Pradesh",/uttar\s*pradesh|\bu\.p\.?\b/],["Haryana",/haryana/],["Maharashtra",/maharashtra/],
+  ["Karnataka",/karnataka/],["Tamil Nadu",/tamil\s*nadu/],["Telangana",/telangana/],["Andhra Pradesh",/andhra/],["Kerala",/kerala/],["Gujarat",/gujarat/],
+  ["Rajasthan",/rajasthan|\(raj\.?\)/],["Madhya Pradesh",/madhya\s*pradesh/],["West Bengal",/west\s*bengal/],["Punjab",/punjab/],["Bihar",/bihar/],
+  ["Jharkhand",/jharkhand/],["Odisha",/odisha|orissa/],["Assam",/assam/],["Himachal Pradesh",/himachal/],["Jammu & Kashmir",/jammu|kashmir/],
+  ["Goa",/\bgoa\b/],["Chhattisgarh",/chhattisgarh/],["Chandigarh",/chandigarh/],["Delhi",/\bdelhi\b/]];
+var PIN3={246:"Uttarakhand",247:"Uttarakhand",248:"Uttarakhand",249:"Uttarakhand",262:"Uttarakhand",263:"Uttarakhand",403:"Goa",605:"Puducherry",737:"Sikkim",744:"Andaman & Nicobar"};
+var PIN2={11:"Delhi",12:"Haryana",13:"Haryana",14:"Punjab",15:"Punjab",16:"Chandigarh",17:"Himachal Pradesh",18:"Jammu & Kashmir",19:"Jammu & Kashmir",
+  20:"Uttar Pradesh",21:"Uttar Pradesh",22:"Uttar Pradesh",23:"Uttar Pradesh",24:"Uttar Pradesh",25:"Uttar Pradesh",26:"Uttar Pradesh",27:"Uttar Pradesh",28:"Uttar Pradesh",
+  30:"Rajasthan",31:"Rajasthan",32:"Rajasthan",33:"Rajasthan",34:"Rajasthan",36:"Gujarat",37:"Gujarat",38:"Gujarat",39:"Gujarat",
+  40:"Maharashtra",41:"Maharashtra",42:"Maharashtra",43:"Maharashtra",44:"Maharashtra",45:"Madhya Pradesh",46:"Madhya Pradesh",47:"Madhya Pradesh",48:"Madhya Pradesh",
+  49:"Chhattisgarh",50:"Telangana",51:"Andhra Pradesh",52:"Andhra Pradesh",53:"Andhra Pradesh",56:"Karnataka",57:"Karnataka",58:"Karnataka",59:"Karnataka",
+  60:"Tamil Nadu",61:"Tamil Nadu",62:"Tamil Nadu",63:"Tamil Nadu",64:"Tamil Nadu",67:"Kerala",68:"Kerala",69:"Kerala",
+  70:"West Bengal",71:"West Bengal",72:"West Bengal",73:"West Bengal",74:"West Bengal",75:"Odisha",76:"Odisha",77:"Odisha",78:"Assam",79:"North East",
+  80:"Bihar",81:"Jharkhand",82:"Jharkhand",83:"Jharkhand",84:"Bihar",85:"Bihar"};
+var CITIES=[["Greater Noida",/greater\s*noida/,"Uttar Pradesh"],["Noida",/noida/,"Uttar Pradesh"],["Ghaziabad",/ghaziabad|\bgzb\b|muradnagar|vijay\s*nagar|sidharth\s*vihar/,"Uttar Pradesh"],
+  ["Gurugram",/gurugram|gurgaon/,"Haryana"],["Faridabad",/faridabad/,"Haryana"],["Navi Mumbai",/navi\s*mumbai|vashi/,"Maharashtra"],["Mumbai",/mumbai|andheri|bandra|thane/,"Maharashtra"],
+  ["Pune",/pune/,"Maharashtra"],["Nagpur",/nagpur/,"Maharashtra"],["Aurangabad",/aurangabad/,"Maharashtra"],["Bengaluru",/bengaluru|bangalore/,"Karnataka"],["Mangalore",/mangalore|mangaluru/,"Karnataka"],
+  ["Mysuru",/mysore|mysuru/,"Karnataka"],["Hyderabad",/hyderabad|secunderabad/,"Telangana"],["Chennai",/chennai/,"Tamil Nadu"],["Coimbatore",/coimbatore/,"Tamil Nadu"],["Nagercoil",/nagercoil/,"Tamil Nadu"],
+  ["Kolkata",/kolkata|new\s*town/,"West Bengal"],["Hooghly",/hooghly|chandannagar/,"West Bengal"],["Thrissur",/thrissur/,"Kerala"],["Kochi",/kochi|cochin|ernakulam/,"Kerala"],
+  ["Ahmedabad",/ahmedabad/,"Gujarat"],["Surat",/surat/,"Gujarat"],["Vadodara",/vadodara|baroda/,"Gujarat"],["Kutch",/kutch|mundra|bhuj/,"Gujarat"],
+  ["Jaipur",/jaipur/,"Rajasthan"],["Jhalawar",/jhalawar/,"Rajasthan"],["Lucknow",/lucknow/,"Uttar Pradesh"],["Agra",/agra\b/,"Uttar Pradesh"],["Kanpur",/kanpur/,"Uttar Pradesh"],
+  ["Varanasi",/varanasi|banaras/,"Uttar Pradesh"],["Meerut",/meerut/,"Uttar Pradesh"],["Chandauli",/chandauli/,"Uttar Pradesh"],["Bhadohi",/bhadohi/,"Uttar Pradesh"],
+  ["Kashipur",/kashipur/,"Uttarakhand"],["Dehradun",/dehradun/,"Uttarakhand"],["Gwalior",/gwalior/,"Madhya Pradesh"],["Indore",/indore/,"Madhya Pradesh"],["Bhopal",/bhopal/,"Madhya Pradesh"],
+  ["Yamunanagar",/yamuna\s*nagar/,"Haryana"],["Chandigarh",/chandigarh/,"Chandigarh"],["Ludhiana",/ludhiana/,"Punjab"],["Patna",/patna/,"Bihar"],
+  ["Delhi",/delhi|mayapuri|tilak\s*nagar|shahdara|okhla|chhat?t?arpur|nehru\s*place|kirari|sagar\s*pur|rajpur\s*khurd|greater\s*kailash|zamrudpur|sangam\s*vihar|shaheen\s*bagh|cr\s*park/,"Delhi"]];
+function geoOf(a){
+  var l=String(a||"").toLowerCase(),st="",city="";
+  if(!l)return {state:"",city:""};
+  for(var i=0;i<ST_NAMES.length;i++)if(ST_NAMES[i][1].test(l)){st=ST_NAMES[i][0];break}
+  if(!st){var pm=l.match(/(?:^|\D)([1-8]\d{2})\s?(\d{3})(?!\d)/);if(pm)st=PIN3[pm[1]]||PIN2[pm[1].slice(0,2)]||""}
+  for(var j=0;j<CITIES.length;j++)if(CITIES[j][1].test(l)){city=CITIES[j][0];if(!st)st=CITIES[j][2];break}
+  return {state:st,city:city};
+}
+
+/* ======================= PURCHASE sheet (product ka purchase rate) ======================= */
+var PMAP={},PLIST=[];
+var PUR_RULES=[["skip",/updated|modified/],["sale",/sale|selling|mrp|hamara|our rate|customer rate/],["cost",/purchase|cost|kharid|buy|vendor|rate|price/],["product",/product|item|name|naam/]];
+function purchaseFromRows(rows){
+  rows=nonBlank(rows);
+  var m={};if(!rows.length)return m;
+  var ix=classify(rows[0],PUR_RULES);
+  if(ix.product===undefined||ix.cost===undefined)throw new Error("Purchase sheet mein 'Product' aur 'Purchase Rate' column chahiye");
+  rows.slice(1).forEach(function(r){
+    var n=clean(r[ix.product]),k=prodKey(n),c=lineNum(r[ix.cost]);
+    if(!k||c==null)return;
+    m[k]={name:n,cost:c,sale:ix.sale!==undefined?lineNum(r[ix.sale]):null};
+  });
+  return m;
+}
+function costOf(name){
+  var k=prodKey(name);if(!k)return null;
+  if(PMAP[k])return PMAP[k];
+  var best=null;
+  PLIST.forEach(function(pk){if(pk.length>=6&&(k.indexOf(pk)>-1||pk.indexOf(k)>-1)&&(!best||pk.length>best.length))best=pk});
+  return best?PMAP[best]:null;
+}
+function applyCosts(){
+  PLIST=Object.keys(PMAP);
+  orders.forEach(function(o){
+    o.costNote="";
+    if(o.purchaseCol!=null){o.purchase=o.purchaseCol;calcProfit(o);return}
+    o.purchase=null;
+    if(PLIST.length&&o.items.length){
+      var sum=0,miss=[];
+      o.items.forEach(function(it){var c=costOf(it.name);if(c&&it.qty!=null)sum+=c.cost*it.qty;else miss.push(it.name)});
+      if(!miss.length)o.purchase=sum;else o.costNote="Purchase rate nahi mila: "+miss.join(", ");
+    }
+    calcProfit(o);
+  });
+  hasCost=OCOL.purchase!==undefined||OCOL.shipCost!==undefined||PLIST.length>0;
+}
+
+/* ======================= Helpers ======================= */
+function dDiff(a,b){return Math.round((new Date(b+"T00:00:00Z")-new Date(a+"T00:00:00Z"))/864e5)}
+function byRange(list,f,t){
+  if(f&&t&&t<f){var x=f;f=t;t=x}
+  return list.filter(function(o){if((f||t)&&!o.day)return false;return (!f||o.day>=f)&&(!t||o.day<=t)});
+}
+function median(a){if(!a.length)return null;a=a.slice().sort(function(x,y){return x-y});var m=a.length>>1;return a.length%2?a[m]:(a[m-1]+a[m])/2}
+function avg(a){return a.length?a.reduce(function(x,y){return x+y},0)/a.length:null}
+function dinTxt(n){return n==null?"-":(Math.round(n*10)/10)+" din"}
+function ageBadge(n){var c=n>7?"not":n>3?"fu":"conv";return '<span class="st '+c+'">'+n+' din</span>'}
+function clientKey(o){return o.k||("n:"+(o.name+"|"+o.company).toLowerCase())}
+function clientLabel(c){return '<b>'+(esc(c.name)||"-")+'</b>'+(c.company?'<br><span class="mu">'+esc(c.company)+'</span>':'')+(c.num?'<br><span class="mu">'+mask(c.num)+'</span>':'')}
+function chg(cur,prev){
+  if(!prev&&!cur)return '<span class="chg eq">–</span>';
+  if(!prev)return '<span class="chg up">naya</span>';
+  var p=(cur-prev)/prev*100;
+  return '<span class="chg '+(p>0.5?"up":p<-0.5?"dn":"eq")+'">'+(p>0.5?"▲ ":p<-0.5?"▼ ":"")+Math.abs(p).toFixed(0)+'%</span>';
+}
+
+/* ======================= Is mahina vs pichhla mahina ======================= */
+function renderCompare(){
+  var today=parts(new Date()).day,y=+today.slice(0,4),m=+today.slice(5,7),d=+today.slice(8,10);
+  var py=m===1?y-1:y,pmo=m===1?12:m-1,dim=new Date(Date.UTC(py,pmo,0)).getUTCDate();
+  var tf=y+"-"+pad(m)+"-01",pf=py+"-"+pad(pmo)+"-01",pt=py+"-"+pad(pmo)+"-"+pad(Math.min(d,dim)),pfull=py+"-"+pad(pmo)+"-"+pad(dim);
+  function S(f,t){var l=orders.filter(function(o){return o.day&&o.day>=f&&o.day<=t});
+    return {n:l.length,net:l.reduce(function(a,o){return a+o.net},0),
+      leads:leads.filter(function(x){return x.day>=f&&x.day<=t}).length,
+      profit:l.reduce(function(a,o){return a+(o.profit||0)},0)}}
+  var c=S(tf,today),p=S(pf,pt),pF=S(pf,pfull);
+  $("sa-cmp-sub").textContent="(1–"+d+" "+MNAME[m-1]+" vs 1–"+Math.min(d,dim)+" "+MNAME[pmo-1]+")";
+  function cell(l,cv,pv,fv,money){
+    var f=money?inr:function(x){return x};
+    return '<div><div class="l">'+l+'</div><div class="v">'+f(cv)+chg(cv,pv)+'</div><div class="s">Pichhla: '+f(pv)+' • Poora '+MNAME[pmo-1]+': '+f(fv)+'</div></div>';
+  }
+  $("sa-cmp").innerHTML=cell("Asli sale",c.net,p.net,pF.net,true)+cell("Orders",c.n,p.n,pF.n)+
+    cell("Leads",c.leads,p.leads,pF.leads)+cell("Average order",c.n?c.net/c.n:0,p.n?p.net/p.n:0,pF.n?pF.net/pF.n:0,true)+
+    (hasCost?cell("Profit",c.profit,p.profit,pF.profit,true):"");
+}
+
+/* ======================= CLIENTS TAB (1, 2, 3, 4) ======================= */
+function buildClients(list){
+  var m={};
+  list.slice().sort(function(a,b){return (a.day||"").localeCompare(b.day||"")}).forEach(function(o){
+    var k=clientKey(o),c=m[k]=m[k]||{key:k,k:o.k,name:"",company:"",num:o.num,list:[],n:0,net:0,first:"",last:"",src:{},city:"",state:""};
+    c.list.push(o);c.n++;c.net+=o.net;
+    if(o.name)c.name=o.name;if(o.company)c.company=o.company;if(o.num)c.num=o.num;
+    if(o.day){if(!c.first)c.first=o.day;c.last=o.day}
+    if(o.source)c.src[o.source]=(c.src[o.source]||0)+1;
+    if(o.geo.city)c.city=o.geo.city;if(o.geo.state)c.state=o.geo.state;
+  });
+  return Object.keys(m).map(function(k){var c=m[k];c.source=Object.keys(c.src).sort(function(a,b){return c.src[b]-c.src[a]})[0]||"";return c});
+}
+function renderClients(){
+  if(!orders.length){["cl-kpis","cl-rows","cl-l2o","cl-state","cl-city","cl-src"].forEach(function(id){$(id).innerHTML=""});
+    $("cl-rows").innerHTML='<tr><td colspan="8" class="mu" style="padding:16px">Order sheet ka data nahi hai.</td></tr>';return}
+  var f=$("cl-from").value,t=$("cl-to").value,list=byRange(orders,f,t),cl=buildClients(list);
+  var tot=cl.length,rep=cl.filter(function(c){return c.n>1}),net=0,repNet=0;
+  cl.forEach(function(c){net+=c.net;if(c.n>1)repNet+=c.net});
+  // Lead -> order
+  var l2o=[],before=0,bySrc={};
+  cl.forEach(function(c){
+    if(!c.k||!LMAP[c.k]||!c.first)return;
+    var dd=dDiff(LMAP[c.k].day,c.first);
+    if(dd<0){before++;return}
+    l2o.push(dd);c.l2o=dd;
+    var s=c.source||"(khali)";(bySrc[s]=bySrc[s]||[]).push(dd);
+  });
+  var st=groupList(cl,function(c){return c.state||"Pata nahi"},function(c){return c.net});
+  $("cl-kpis").innerHTML=
+    kpi(tot,"Total clients",list.length+" orders")+
+    kpi(rep.length,"Repeat clients",tot?(rep.length/tot*100).toFixed(0)+"% clients ne dobara order diya":"-","good")+
+    kpi(net?(repNet/net*100).toFixed(0)+"%":"-","Repeat clients ki sale",inr(repNet)+" asli sale")+
+    kpi(tot?(list.length/tot).toFixed(2):"-","Orders / client","average")+
+    kpi(l2o.length?dinTxt(median(l2o)):"-","Lead → order (median)",l2o.length?l2o.length+" clients • avg "+dinTxt(avg(l2o)):"Leads sheet jodo")+
+    kpi(st.length&&st[0].k!=="Pata nahi"?esc(st[0].k):(st[1]?esc(st[1].k):"-"),"Sabse zyada orders","state");
+
+  // Client table
+  var q=$("cl-q").value.trim().toLowerCase(),qd=q.replace(/\D/g,""),so=$("cl-sort").value;
+  var rows=cl.filter(function(c){if(!q)return true;
+    return (c.name+" "+c.company+" "+c.city+" "+c.state).toLowerCase().indexOf(q)>-1||(qd.length>=3&&String(c.num).indexOf(qd)>-1)});
+  rows.sort(so==="orders"?function(a,b){return b.n-a.n||b.net-a.net}:so==="recent"?function(a,b){return (b.last||"").localeCompare(a.last||"")}:function(a,b){return b.net-a.net});
+  $("cl-title").textContent="Clients ("+rows.length+")";
+  $("cl-rows").innerHTML=rows.slice(0,300).map(function(c,i){
+    return '<tr><td>'+(i+1)+'</td><td>'+clientLabel(c)+(c.k?sheetTags(c.k):"")+'</td>'+
+      '<td>'+c.n+(c.n>1?' <span class="st conv">Repeat</span>':'')+'</td><td class="r"><b>'+inr(c.net)+'</b></td>'+
+      '<td class="nw">'+(c.first?niceDate(c.first):"-")+'</td><td class="nw">'+(c.last?niceDate(c.last):"-")+'</td>'+
+      '<td>'+(esc(c.source)||"-")+'</td><td>'+(esc(c.city)||"-")+(c.state?'<br><span class="mu">'+esc(c.state)+'</span>':'')+'</td></tr>';
+  }).join("")||'<tr><td colspan="8" class="mu" style="padding:16px">Koi client nahi mila.</td></tr>';
+
+  // Lead -> order buckets
+  var B=[["Usi din",0,0],["1–3 din",1,3],["4–7 din",4,7],["8–15 din",8,15],["16–30 din",16,30],["30+ din",31,1e9]];
+  var bc=B.map(function(b){return l2o.filter(function(x){return x>=b[1]&&x<=b[2]}).length}),bmx=Math.max.apply(null,bc.concat(1));
+  $("cl-l2o").innerHTML=l2o.length?B.map(function(b,i){return hb(b[0],bc[i]+' <span class="mu">('+Math.round(bc[i]/l2o.length*100)+'%)</span>',bc[i]/bmx*100,i<2?"conv":i<4?"disp":"fu")}).join("")+
+    '<div class="note">'+l2o.length+' clients ki lead aur order dono mile. Median '+dinTxt(median(l2o))+', average '+dinTxt(avg(l2o))+'.'+(before?' '+before+' clients ka order lead se pehle ka hai (purane client).':'')+'</div>'
+    :'<div class="hint">Leads sheet ke numbers aur Order sheet ke numbers match hone par ye dikhega.</div>';
+
+  // State / city
+  var smx=st.length?st[0].n:1;
+  $("cl-state").innerHTML=st.slice(0,10).map(function(x){return hb(x.k,x.n+' <span class="mu">· '+inrK(x.v)+'</span>',x.n/smx*100,x.k==="Pata nahi"?"pen":"")}).join("");
+  var ct=groupList(cl.filter(function(c){return c.city}),function(c){return c.city},function(c){return c.net}),cmx=ct.length?ct[0].n:1;
+  $("cl-city").innerHTML=ct.slice(0,10).map(function(x){return hb(x.k,x.n+' <span class="mu">· '+inrK(x.v)+'</span>',x.n/cmx*100,"disp")}).join("")||'<div class="mu">Address se shehar nahi mila.</div>';
+
+  // Source report
+  var hasLeadSrc=leads.some(function(l){return l.src});
+  var lf=f,lt=t;if(lf&&lt&&lt<lf){var x=lf;lf=lt;lt=x}
+  var lv=leads.filter(function(l){return (!lf||l.day>=lf)&&(!lt||l.day<=lt)});
+  var lsc={};lv.forEach(function(l){var k=(l.src||"").toLowerCase();lsc[k]=(lsc[k]||0)+1});
+  var sg=groupList(list,function(o){return o.source||"(khali)"},function(o){return o.net});
+  $("cl-src").innerHTML=sg.map(function(x){
+    var ord=list.filter(function(o){return (o.source||"(khali)")===x.k}),cs={};ord.forEach(function(o){cs[clientKey(o)]=1});
+    var nc=Object.keys(cs).length,ln=hasLeadSrc?(lsc[x.k.toLowerCase()]||0):null,md=bySrc[x.k]?median(bySrc[x.k]):null;
+    return '<tr><td><b>'+esc(x.k)+'</b></td><td class="r">'+(ln==null?"-":ln)+'</td><td class="r">'+x.n+'</td><td class="r">'+nc+'</td>'+
+      '<td class="r">'+(ln?(nc/ln*100).toFixed(1)+"%":"-")+'</td><td class="r"><b>'+inr(x.v)+'</b></td><td class="r">'+inr(x.v/x.n)+'</td>'+
+      '<td class="r">'+(net?(x.v/net*100).toFixed(0)+"%":"-")+'</td><td class="r">'+dinTxt(md)+'</td></tr>';
+  }).join("");
+  $("cl-src-note").textContent=hasLeadSrc?"Leads = Leads sheet ke Source column se (naam same hona chahiye, jaise \"Instagram\"). Conversion = clients / leads.":
+    "Leads sheet mein 'Source' column nahi hai, isliye har source ki leads aur conversion nahi dikh rahe. Leads sheet mein Source column (Instagram / Website / …) add karoge to ye bhi dikhega.";
+}
+
+/* ======================= PRODUCTS TAB (5) ======================= */
+function renderProducts(){
+  if(!orders.length){$("pr-kpis").innerHTML="";$("pr-head").innerHTML="";$("pr-rows").innerHTML='<tr><td class="mu" style="padding:16px">Order sheet ka data nahi hai.</td></tr>';return}
+  var list=byRange(orders,$("pr-from").value,$("pr-to").value),pm={};
+  list.forEach(function(o){
+    var single=o.items.length===1;
+    o.items.forEach(function(it){
+      var k=prodKey(it.name);if(!k)return;
+      var p=pm[k]=pm[k]||{names:{},n:0,q:0,v:0,rq:0,rv:0,mon:{},last:"",clients:{}};
+      p.names[it.name]=(p.names[it.name]||0)+1;p.n++;p.clients[clientKey(o)]=1;
+      var v=single?(o.base!=null?Math.min(o.net,o.base+o.extra):o.net):(it.amt||0);
+      p.v+=v;
+      if(it.qty!=null){p.q+=it.qty;var rv=single?(o.base!=null?o.base:null):it.amt;if(rv!=null){p.rq+=it.qty;p.rv+=rv}}
+      if(o.day){var mk=o.day.slice(0,7);p.mon[mk]=(p.mon[mk]||0)+v;if(o.day>p.last)p.last=o.day}
+    });
+  });
+  var q=$("pr-q").value.trim().toLowerCase(),so=$("pr-sort").value;
+  var pl=Object.keys(pm).map(function(k){var p=pm[k];
+    p.name=Object.keys(p.names).sort(function(a,b){return p.names[b]-p.names[a]})[0];
+    p.rate=p.rq?p.rv/p.rq:null;
+    var bm=Object.keys(p.mon).sort(function(a,b){return p.mon[b]-p.mon[a]})[0];p.best=bm?MNAME[+bm.slice(5)-1]+" "+bm.slice(2,4):"-";
+    p.cost=PLIST.length?costOf(p.name):null;
+    if(p.cost&&p.rate!=null){p.mu=p.rate-p.cost.cost;p.mp=p.rate?p.mu/p.rate*100:null;p.mt=p.mu*p.q}
+    p.nc=Object.keys(p.clients).length;
+    return p;
+  }).filter(function(p){return !q||p.name.toLowerCase().indexOf(q)>-1});
+  pl.sort(so==="orders"?function(a,b){return b.n-a.n||b.v-a.v}:so==="qty"?function(a,b){return b.q-a.q}:function(a,b){return b.v-a.v});
+  var tv=pl.reduce(function(a,p){return a+p.v},0),showC=PLIST.length>0;
+  var byV=pl.slice().sort(function(a,b){return b.v-a.v})[0],byN=pl.slice().sort(function(a,b){return b.n-a.n})[0];
+  var mts=pl.filter(function(p){return p.mt!=null}),mtot=mts.reduce(function(a,p){return a+p.mt},0);
+  $("pr-kpis").innerHTML=kpi(pl.length,"Products","alag-alag")+
+    (byV?kpi(inrK(byV.v),"Sabse zyada sale",esc(byV.name),"good"):"")+
+    (byN?kpi(byN.n,"Sabse zyada orders",esc(byN.name)):"")+
+    (showC?kpi(inr(mtot),"Product margin (andaza)",mts.length+" products ka purchase rate mila",mtot>=0?"good":"warn"):"");
+  $("pr-head").innerHTML='<tr><th>Product</th><th class="r">Orders</th><th class="r">Clients</th><th class="r">Quantity</th><th class="r">Avg rate</th><th class="r">Sale</th><th class="r">Share</th><th>Best mahina</th><th>Aakhri order</th>'+
+    (showC?'<th class="r">Purchase rate</th><th class="r">Margin / pc</th><th class="r">Margin %</th><th class="r">Kul margin</th>':'')+'</tr>';
+  $("pr-title").textContent="Products ("+pl.length+")";
+  $("pr-rows").innerHTML=pl.map(function(p){
+    return '<tr><td><b>'+esc(p.name)+'</b></td><td class="r">'+p.n+'</td><td class="r">'+p.nc+'</td><td class="r">'+(p.q?Math.round(p.q).toLocaleString("en-IN"):"-")+'</td>'+
+      '<td class="r">'+(p.rate!=null?"₹"+(+p.rate.toFixed(2)).toLocaleString("en-IN"):"-")+'</td><td class="r"><b>'+inr(p.v)+'</b></td>'+
+      '<td class="r">'+(tv?(p.v/tv*100).toFixed(1)+"%":"-")+'</td><td>'+p.best+'</td><td class="nw">'+(p.last?niceDate(p.last):"-")+'</td>'+
+      (showC?'<td class="r">'+(p.cost?"₹"+p.cost.cost.toLocaleString("en-IN"):'<span class="mu">nahi mila</span>')+'</td>'+
+        '<td class="r">'+(p.mu!=null?"₹"+(+p.mu.toFixed(2)).toLocaleString("en-IN"):"-")+'</td>'+
+        '<td class="r">'+(p.mp!=null?p.mp.toFixed(0)+"%":"-")+'</td><td class="r">'+(p.mt!=null?inr(p.mt):"-")+'</td>':'')+'</tr>';
+  }).join("")||'<tr><td colspan="9" class="mu" style="padding:16px">Koi product nahi mila.</td></tr>';
+  $("pr-note").textContent="Ek jaise naam (jaise \"Lollipop Sign Board 18*18\" aur \"Lollipop Signboard (18\" × 18\")\") ek hi product gine jaate hain. Sale = bina GST / delivery. "+
+    (showC?"Margin = avg rate − purchase rate (Purchase sheet se).":"Purchase sheet (PURCHASE_CSV_URL) jodoge to har product ka margin bhi dikhega.");
+}
+
+/* ======================= KAAM TAB (7, 8, 10, 11) ======================= */
+function orderIssues(){
+  var seen={},out=[];
+  orders.forEach(function(o){
+    var is=[];
+    if(!o.rawDate)is.push("Date khali");else if(!o.day)is.push("Date samajh nahi aayi ("+o.rawDate+")");
+    if(!o.num)is.push("Number khali");else if(o.num.length<10)is.push("Number adhoora ("+o.num+")");
+    if(!o.products.length)is.push("Product khali");
+    if(o.T==null)is.push("Total Amount khali");
+    if(o.mode==="check"&&o.base!=null&&o.T!=null)is.push("Total "+inr(o.T)+" ≠ Rate × Qty "+inr(o.base)+(o.dv.d?" + delivery "+inr(o.dv.d):""));
+    if(o.base==null&&o.products.length)is.push("Rate / Quantity samajh nahi aaya");
+    if(o.status==="—")is.push("Status khali");
+    if(!o.address&&o.dv.kind!=="pickup")is.push("Address khali");
+    if(!o.payment&&!o.pendingText)is.push("Payment khali");
+    if(!o.source)is.push("Lead source khali");
+    if(o.day&&o.dispatchOn&&o.dispatchOn<o.day)is.push("Dispatch date order se pehle");
+    if(o.day&&o.deliveredOn&&o.deliveredOn<o.day)is.push("Delivery date order se pehle");
+    var dk=[o.k||o.name,o.day,Math.round(o.Tcalc),o.products.join("|")].join("~");
+    if(seen[dk])is.push("Duplicate lag raha hai (row "+seen[dk]+" jaisa)");else seen[dk]=o.row;
+    if(is.length)out.push({o:o,is:is});
+  });
+  return out;
+}
+function renderKaam(){
+  var today=parts(new Date()).day;
+  if(!orders.length){["km-kpis","km-open","km-pay","km-pay-k","km-del","km-err","km-err-sum"].forEach(function(id){$(id).innerHTML=""});return}
+  // 7: kaam baaki
+  var open=orders.filter(function(o){var c=stCls(o.status);return c!=="conv"&&c!=="not"}).map(function(o){
+    var ref=stCls(o.status)==="disp"&&o.dispatchOn?o.dispatchOn:o.day;
+    return {o:o,age:ref?dDiff(ref,today):null};
+  }).sort(function(a,b){return (b.age==null?-1:b.age)-(a.age==null?-1:a.age)});
+  var stc={};open.forEach(function(x){stc[x.o.status]=(stc[x.o.status]||0)+1});
+  var old7=open.filter(function(x){return x.age!=null&&x.age>7}).length;
+  // 11: paisa baaki
+  var pend=orders.filter(function(o){return o.pending>0}).map(function(o){
+    var ref=o.deliveredOn||o.day;return {o:o,age:ref?dDiff(ref,today):null};
+  }).sort(function(a,b){return (b.age||0)-(a.age||0)});
+  var pendT=pend.reduce(function(a,x){return a+x.o.pending},0);
+  $("km-kpis").innerHTML=kpi(open.length,"Kaam baaki","Delivered nahi hue")+
+    Object.keys(stc).sort(function(a,b){return stc[b]-stc[a]}).map(function(k){return kpi(stc[k],esc(k),"abhi")}).join("")+
+    kpi(old7,"7 din se purane","jaldi dekho",old7?"warn":"good")+
+    kpi(inr(pendT),"Paisa baaki",pend.length+" orders",pendT?"warn":"good");
+  $("km-open-t").textContent="Kaam baaki ("+open.length+") — purane pehle";
+  $("km-open").innerHTML=open.map(function(x){var o=x.o;
+    return '<tr><td>'+(x.age==null?'<span class="mu">Date nahi</span>':ageBadge(x.age))+'</td><td class="nw">'+(o.day?niceDate(o.day):"-")+(o.dispatchOn?'<br><span class="mu">Dispatch '+niceDate(o.dispatchOn)+'</span>':'')+'</td>'+
+      '<td><b>'+(esc(o.name)||"-")+'</b>'+(o.company?'<br><span class="mu">'+esc(o.company)+'</span>':'')+'<br><span class="mu">'+(mask(o.num)||"-")+'</span></td>'+
+      '<td class="prod">'+(esc(o.products.join("\n"))||"-")+'</td><td><span class="st '+stCls(o.status)+'">'+esc(o.status)+'</span></td>'+
+      '<td>'+esc(o.dv.label)+'</td><td class="r">'+(o.pending>0?inr(o.pending):"-")+'</td></tr>';
+  }).join("")||'<tr><td colspan="7" class="mu" style="padding:16px">Sab orders deliver ho chuke hain. 🎉</td></tr>';
+
+  // 11: payment
+  var pdl=orders.filter(function(o){return o.payDate&&o.day}).map(function(o){return dDiff(o.day,o.payDate)}).filter(function(x){return x>=0});
+  $("km-pay-t").textContent="Paisa baaki ("+pend.length+" orders • "+inr(pendT)+")";
+  $("km-pay-k").innerHTML=OCOL.payDate!==undefined?
+    '<div class="kpis">'+kpi(dinTxt(avg(pdl)),"Payment aane mein (avg)",pdl.length+" orders, order date se")+kpi(dinTxt(median(pdl)),"Payment (median)","aadhe orders isse jaldi")+'</div>':
+    '<div class="hint mb">Order sheet mein <b>Payment Date</b> column add karo (jis din paisa aaya). Phir dikhega ki payment aane mein kitne din lagte hain.</div>';
+  $("km-pay").innerHTML=pend.map(function(x){var o=x.o;
+    return '<tr><td><b>'+(esc(o.name)||"-")+'</b>'+(o.company?'<br><span class="mu">'+esc(o.company)+'</span>':'')+'<br><span class="mu">'+(mask(o.num)||"-")+'</span></td>'+
+      '<td class="r"><b>'+inr(o.pending)+'</b></td><td class="r">'+inr(o.Tcalc)+'</td><td class="nw">'+(o.day?niceDate(o.day):"-")+'</td>'+
+      '<td>'+(x.age==null?"-":ageBadge(x.age))+(o.deliveredOn?'<br><span class="mu">delivery se</span>':'')+'</td>'+
+      '<td><span class="st '+stCls(o.status)+'">'+esc(o.status)+'</span></td><td>'+(esc(o.payment)||"-")+(o.payDate?'<br><span class="mu">'+niceDate(o.payDate)+'</span>':'')+'</td></tr>';
+  }).join("")||'<tr><td colspan="7" class="mu" style="padding:16px">Kisi order mein paisa baaki nahi hai.</td></tr>';
+
+  // 10: delivery time
+  var hasD=OCOL.dispatchOn!==undefined,hasV=OCOL.deliveredOn!==undefined;
+  if(hasD||hasV){
+    var o2d=[],d2v=[],o2v=[],slow=[];
+    orders.forEach(function(o){
+      if(o.day&&o.dispatchOn){var a=dDiff(o.day,o.dispatchOn);if(a>=0)o2d.push(a)}
+      if(o.dispatchOn&&o.deliveredOn){var b=dDiff(o.dispatchOn,o.deliveredOn);if(b>=0)d2v.push(b)}
+      if(o.day&&o.deliveredOn){var c=dDiff(o.day,o.deliveredOn);if(c>=0){o2v.push(c);slow.push({o:o,d:c})}}
+    });
+    slow.sort(function(a,b){return b.d-a.d});
+    $("km-del").innerHTML='<div class="kpis">'+
+      (hasD?kpi(dinTxt(avg(o2d)),"Order → Dispatch (avg)",o2d.length+" orders • median "+dinTxt(median(o2d))):"")+
+      (hasD&&hasV?kpi(dinTxt(avg(d2v)),"Dispatch → Delivery (avg)",d2v.length+" orders • median "+dinTxt(median(d2v))):"")+
+      (hasV?kpi(dinTxt(avg(o2v)),"Order → Delivery (avg)",o2v.length+" orders • median "+dinTxt(median(o2v))):"")+'</div>'+
+      (slow.length?'<h2>Sabse zyada time lene wale</h2>'+slow.slice(0,5).map(function(x){return hb((x.o.name||"-")+" • "+(x.o.products[0]||""),x.d+" din",x.d/slow[0].d*100,x.d>7?"not":"fu")}).join(""):"")+
+      (!hasD||!hasV?'<div class="hint">'+(!hasD?'<b>Dispatch Date</b>':'<b>Delivery Date</b>')+' column bhi add karoge to poora hisaab dikhega.</div>':'');
+  }else{
+    $("km-del").innerHTML='<div class="hint">Order sheet mein do column add karo: <b>Dispatch Date</b> (jis din bheja) aur <b>Delivery Date</b> (jis din pahuncha). Phir yahan dikhega ki order se dispatch aur delivery tak kitne din lagte hain, aur kaun se orders late hue.</div>';
+  }
+
+  // 8: galtiyan
+  var iss=orderIssues(),cnt={};
+  iss.forEach(function(x){x.is.forEach(function(t){var k=t.replace(/\s*\(.*$/,"").replace(/^Total ₹.*/,"Total ≠ Rate × Qty");cnt[k]=(cnt[k]||0)+1})});
+  var lnote=[];if(info.bad)lnote.push(info.bad+" lead rows mein number ya date/time samajh nahi aaya");if(info.sci)lnote.push(info.sci+" lead numbers 9.19E+11 format mein hain");
+  $("km-err-t").textContent="Sheet ki galtiyan ("+iss.length+" orders)";
+  $("km-err-sum").innerHTML=(Object.keys(cnt).length?'<div class="gl mb">'+Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]}).map(function(k){return '<span class="st fu">'+esc(k)+': '+cnt[k]+'</span>'}).join("")+'</div>':"")+
+    (lnote.length?'<div class="hint mb">Leads sheet: '+esc(lnote.join(" • "))+'</div>':"");
+  $("km-err").innerHTML=iss.map(function(x){var o=x.o;
+    return '<tr><td><b>'+o.row+'</b></td><td>'+(esc(o.name)||"-")+(o.day?'<br><span class="mu">'+niceDate(o.day)+'</span>':'')+'</td><td><div class="gl">'+x.is.map(function(t){return '<span class="st '+(/khali|Duplicate|≠|samajh/.test(t)&&!/source|Payment|Address/.test(t)?"not":"fu")+'">'+esc(t)+'</span>'}).join("")+'</div></td></tr>';
+  }).join("")||'<tr><td colspan="3" class="mu" style="padding:16px">Koi galti nahi mili. 👍</td></tr>';
+}
+
+/* ======================= EXTRA SHEET TABS ======================= */
+function setupExtras(){
+  extras=(C.EXTRA_SHEETS||[]).filter(function(s){return s&&s.name}).map(function(cfg,i){
+    var b=document.createElement("button");b.className="tab";b.textContent=cfg.name;
+    b.addEventListener("click",function(){showTab("ex"+i)});
+    $("sl-tabs").appendChild(b);
+    var p=document.createElement("div");p.style.display="none";
+    p.innerHTML='<div class="bar card"><label>Search<input type="search" class="ex-q" placeholder="search…"></label>'+
+      '<label>Dikhao<select class="ex-f"><option value="">Sab</option><option value="m">Sirf leads se match</option><option value="u">Match nahi hue</option></select></label>'+
+      '<button class="ex-c">Clear</button><button class="refresh">Refresh</button></div>'+
+      '<div class="kpis"></div>'+
+      '<div class="card"><h2 class="ex-t"></h2><div class="tw"><table class="stbl"><thead></thead><tbody></tbody></table></div>'+
+      '<div class="note">Number match last 10 digits se hota hai. Pehli 300 rows dikhti hain — search use karo.</div></div>';
+    $("ex-wrap").appendChild(p);
+    var x={cfg:cfg,btn:b,panel:p,data:null,err:""};
+    p.querySelector(".ex-q").addEventListener("input",function(){renderExtra(x)});
+    p.querySelector(".ex-f").addEventListener("change",function(){renderExtra(x)});
+    p.querySelector(".ex-c").addEventListener("click",function(){p.querySelector(".ex-q").value="";p.querySelector(".ex-f").value="";renderExtra(x)});
+    p.querySelector(".refresh").addEventListener("click",loadAll);
+    return x;
+  });
+}
+function renderExtra(x){
+  var p=x.panel,kp=p.querySelector(".kpis"),hd=p.querySelector("thead"),bd=p.querySelector("tbody"),tt=p.querySelector(".ex-t");
+  tt.textContent=x.cfg.name;
+  if(!x.data){
+    kp.innerHTML="";hd.innerHTML="";
+    bd.innerHTML='<tr><td class="mu" style="padding:16px">'+(!x.cfg.url?"Is sheet ka URL abhi khali hai — SL_CONFIG.EXTRA_SHEETS mein daalo.":(x.err?"Sheet load nahi hui: "+esc(x.err):"Loading…"))+'</td></tr>';
+    return;
+  }
+  var d=x.data,q=p.querySelector(".ex-q").value.trim().toLowerCase(),only=p.querySelector(".ex-f").value,matched=0;
+  d.rows.forEach(function(r){if(r.k&&LMAP[r.k])matched++});
+  kp.innerHTML=kpi(d.rows.length,"Total rows",esc(x.cfg.name))+
+    kpi(matched,"Leads se match","number lead sheet mein mila")+
+    kpi(d.rows.length-matched,"Match nahi hua","lead sheet mein nahi");
+  var rows=d.rows.filter(function(r){
+    var m=r.k&&LMAP[r.k];
+    if(only==="m"&&!m)return false;
+    if(only==="u"&&m)return false;
+    if(!q)return true;
+    return r.cells.join(" ").toLowerCase().indexOf(q)>-1||(m&&m.name.toLowerCase().indexOf(q)>-1);
+  });
+  tt.textContent=x.cfg.name+" ("+rows.length+")";
+  hd.innerHTML='<tr><th>Lead match</th><th>Order</th>'+d.hdr.map(function(h){return '<th>'+(esc(h)||"-")+'</th>'}).join("")+'</tr>';
+  bd.innerHTML=rows.slice(0,300).map(function(r){
+    var m=r.k&&LMAP[r.k];
+    return '<tr><td>'+(m?'<b>'+(esc(m.name)||"-")+'</b><br><span class="mu">Lead: '+niceDate(m.day)+'</span>':'<span class="st not">Match nahi</span>')+'</td>'+
+      '<td>'+(r.k?orderPill(r.k):"-")+'</td>'+
+      r.cells.map(function(c,ci){return '<td class="cut" title="'+esc(c)+'">'+(ci===d.ni&&digits(c)?mask(digits(c)):(esc(c)||"-"))+'</td>'}).join("")+'</tr>';
+  }).join("")||'<tr><td colspan="'+(d.hdr.length+2)+'" class="mu" style="padding:16px">Kuch nahi mila.</td></tr>';
+}
+
+/* ======================= LOAD + TABS ======================= */
+function renderAll(){
+  renderLeads();
+  renderSales();
+  renderClients();
+  renderProducts();
+  renderKaam();
+  extras.forEach(renderExtra);
+  if(leads.length){
+    var L=leads[leads.length-1];
+    $("sl-status").textContent="Last lead: "+niceDate(L.day)+" "+L.time+" IST  •  "+orders.length+" orders  •  Update: "+new Date().toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"})+"  •  Google Sheet se live";
+  }else if(orders.length){
+    $("sl-status").textContent=orders.length+" orders  •  Update: "+new Date().toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"})+"  •  Google Sheet se live";
+  }
+}
+function busy(on){document.querySelectorAll("#sl-dash .refresh").forEach(function(b){b.disabled=on})}
+function loadAll(){
+  if(loading)return;
+  loading=true;busy(true);
+  var errs=[],notes=[],jobs=[];
+  if(C.LEADS_CSV_URL){
+    jobs.push(fetchCSV(C.LEADS_CSV_URL).then(function(r){leads=buildLeads(leadsFromRows(r))})
+      .catch(function(e){errs.push("Leads sheet load nahi hui ("+e.message+")")}));
+  }else{leads=[];notes.push("LEADS_CSV_URL khali hai — code ke upar SL_CONFIG mein Leads sheet ka link daalo.")}
+  if(C.ORDERS_CSV_URL){
+    jobs.push(fetchCSV(C.ORDERS_CSV_URL).then(function(r){orders=ordersFromRows(r)})
+      .catch(function(e){errs.push("Order sheet load nahi hui ("+e.message+")")}));
+  }else{orders=[];notes.push("ORDERS_CSV_URL khali hai — Order sheet ka link daalo.")}
+  PMAP={};
+  if(C.PURCHASE_CSV_URL){
+    jobs.push(fetchCSV(C.PURCHASE_CSV_URL).then(function(r){PMAP=purchaseFromRows(r)})
+      .catch(function(e){errs.push("Purchase sheet load nahi hui ("+e.message+")")}));
+  }
+  extras.forEach(function(x){
+    if(!x.cfg.url){x.data=null;x.err="";return}
+    jobs.push(fetchCSV(x.cfg.url).then(function(r){x.data=extraFromRows(r,x.cfg);x.err=""})
+      .catch(function(e){x.err=e.message;errs.push(x.cfg.name+" sheet load nahi hui ("+e.message+")")}));
+  });
+  Promise.all(jobs).then(function(){
+    loading=false;loadedOnce=true;busy(false);
+    LMAP={};leads.forEach(function(l){if(!LMAP[l.k])LMAP[l.k]=l});
+    applyCosts();
+    OMAP={};orders.forEach(function(o){if(!o.k)return;var m=OMAP[o.k]=OMAP[o.k]||{n:0,net:0};m.n++;m.net+=o.net});
+    fillSelect("sa-status",groupList(orders,function(o){return o.status}).map(function(x){return x.k}));
+    fillSelect("sa-src",groupList(orders,function(o){return o.source}).map(function(x){return x.k}).filter(function(k){return k!=="(khali)"}));
+    if(info.sci)notes.push(info.sci+" lead numbers sheet mein 9.19E+11 jaise format mein hain — Number column select karke Format > Number > Plain text karo.");
+    if(info.bad)notes.push(info.bad+" lead rows skip hui (number ya date/time samajh nahi aaya).");
+    var nIss=orderIssues().length;
+    if(nIss)notes.push(nIss+" orders mein sheet ki galti / khali jagah hai — Kaam tab mein \"Sheet ki galtiyan\" dekho.");
+    $("sl-err").textContent=errs.join("  •  ");
+    $("sl-info").textContent=notes.join("  •  ");
+    renderAll();
+  });
+}
+var TABS=["leads","sales","clients","products","kaam"];
+function showTab(t){
+  TABS.forEach(function(n){$("sl-tab-"+n).style.display=t===n?"":"none";$("tab-"+n).classList.toggle("on",t===n)});
+  extras.forEach(function(x,i){var on=t==="ex"+i;x.panel.style.display=on?"":"none";x.btn.classList.toggle("on",on)});
+}
+
+/* ======================= EVENTS ======================= */
+["sl-from","sl-to"].forEach(function(id){$(id).addEventListener("change",renderLeads)});
 $("sl-sort").addEventListener("change",drawRows);
 $("sl-q").addEventListener("input",doSearch);
-$("sl-all").onclick=function(){setRange(0)};
-$("sl-7").onclick=function(){setRange(7)};
-$("sl-30").onclick=function(){setRange(30)};
-$("sl-refresh").onclick=load;
+$("sl-all").addEventListener("click",function(){setRange(0)});
+$("sl-7").addEventListener("click",function(){setRange(7)});
+$("sl-30").addEventListener("click",function(){setRange(30)});
 $("sl-rows").addEventListener("click",function(e){var tr=e.target.closest("tr.day");if(tr)toggle(tr.dataset.day)});
 $("sl-daily").addEventListener("click",function(e){var d=e.target.closest(".d");if(!d)return;
   var tr=$("sl-rows").querySelector('tr.day[data-day="'+d.dataset.day+'"]');
   if(tr){var nx=tr.nextElementSibling;if(!(nx&&nx.classList.contains("det")))toggle(d.dataset.day);tr.scrollIntoView({behavior:"smooth",block:"center"})}});
-load();
-if(SL_CONFIG.SHEET_CSV_URL&&SL_CONFIG.REFRESH_MINUTES>0)setInterval(load,SL_CONFIG.REFRESH_MINUTES*60000);
+
+TABS.forEach(function(n){$("tab-"+n).addEventListener("click",function(){showTab(n)})});
+["cl-from","cl-to","cl-sort"].forEach(function(id){$(id).addEventListener("change",renderClients)});
+$("cl-q").addEventListener("input",renderClients);
+$("cl-clear").addEventListener("click",function(){["cl-from","cl-to","cl-q"].forEach(function(id){$(id).value=""});renderClients()});
+["pr-from","pr-to","pr-sort"].forEach(function(id){$(id).addEventListener("change",renderProducts)});
+$("pr-q").addEventListener("input",renderProducts);
+$("pr-clear").addEventListener("click",function(){["pr-from","pr-to","pr-q"].forEach(function(id){$(id).value=""});renderProducts()});
+["sa-from","sa-to","sa-status","sa-gst","sa-src"].forEach(function(id){$(id).addEventListener("change",renderSales)});
+$("sa-q").addEventListener("input",renderSales);
+$("sa-clear").addEventListener("click",function(){["sa-from","sa-to","sa-status","sa-gst","sa-src","sa-q"].forEach(function(id){$(id).value=""});renderSales()});
+$("sa-rows").addEventListener("click",function(e){var tr=e.target.closest("tr.ord");if(tr)toggleOrder(tr)});
+document.querySelectorAll("#sl-dash .refresh").forEach(function(b){b.addEventListener("click",loadAll)});
+
+setupExtras();
+renderAll();
+loadAll();
+var anyUrl=C.LEADS_CSV_URL||C.ORDERS_CSV_URL||C.PURCHASE_CSV_URL||extras.some(function(x){return x.cfg.url});
+if(C.REFRESH_MINUTES>0&&anyUrl)setInterval(loadAll,C.REFRESH_MINUTES*60000);
 })();
 </script>
 </body>
